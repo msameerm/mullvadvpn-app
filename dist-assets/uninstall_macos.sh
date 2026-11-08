@@ -63,7 +63,7 @@ osascript -e 'tell application "System Events" to delete login item "SocialComma
 
 [[ $ASSUMEYES == "y" ]] || read -r -p "Do you want to delete the log and cache files the app has created? (y/n) "
 if [[ $ASSUMEYES == "y" || "$REPLY" =~ [Yy]$ ]]; then
-    sudo rm -rf /var/log/mullvad-vpn /var/root/Library/Caches/mullvad-vpn /Library/Caches/mullvad-vpn
+    sudo rm -rf /var/log/socialcommand-vpn /var/root/Library/Caches/socialcommand-vpn /Library/Caches/socialcommand-vpn
     for user in /Users/*; do
         user_log_dir="$user/Library/Logs/SocialCommand VPN"
         if [[ -d "$user_log_dir" ]]; then
@@ -75,7 +75,7 @@ fi
 
 [[ $ASSUMEYES == "y" ]] || read -r -p "Do you want to delete the SocialCommand VPN settings? (y/n) "
 if [[ $ASSUMEYES == "y" || "$REPLY" =~ [Yy]$ ]]; then
-    sudo rm -rf /etc/mullvad-vpn
+    sudo rm -rf /etc/socialcommand-vpn
     for user in /Users/*; do
         user_settings_dir="$user/Library/Application Support/SocialCommand VPN"
         if [[ -d "$user_settings_dir" ]]; then

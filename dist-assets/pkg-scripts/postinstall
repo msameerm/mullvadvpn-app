@@ -12,7 +12,7 @@ if [[ $INSTALL_DIR == *"SocialCommand VPN.app" ]]; then
     exit 0
 fi
 
-LOG_DIR=/var/log/mullvad-vpn
+LOG_DIR=/var/log/socialcommand-vpn
 
 mkdir -p $LOG_DIR
 exec > $LOG_DIR/postinstall.log 2>&1
