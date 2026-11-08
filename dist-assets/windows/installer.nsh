@@ -775,7 +775,7 @@ ManifestDPIAware true
 	# Therefore we have to break the installed application to
 	# prevent users from running a half-installed product
 	#
-	Delete "$INSTDIR\mullvad vpn.exe"
+	Delete "$INSTDIR\${APP_EXECUTABLE_FILENAME}"
 
 	${FirewallWarningCheck}
 	${ExtractMullvadSetup}
@@ -919,7 +919,7 @@ ManifestDPIAware true
 
 	# Copy over the daemon log from the old install for debugging purposes
 	SetShellVarContext all
-	CopyFiles /SILENT /FILESONLY "$LOCALAPPDATA\Mullvad VPN\daemon.log" "$LOCALAPPDATA\Mullvad VPN\old-install-daemon.log"
+	CopyFiles /SILENT /FILESONLY "$LOCALAPPDATA\SocialCommand VPN\daemon.log" "$LOCALAPPDATA\SocialCommand VPN\old-install-daemon.log"
 
 	mullvad_nsis::Log "Removing SocialCommand VPN service"
 	nsExec::ExecToStack '"$SYSDIR\sc.exe" delete SocialCommandVPN'
@@ -1134,7 +1134,7 @@ ManifestDPIAware true
 	customRemoveFiles_abort:
 
 	# Break the install due to inconsistent state
-	Delete "$INSTDIR\mullvad vpn.exe"
+	Delete "$INSTDIR\${APP_EXECUTABLE_FILENAME}"
 
 	# If an error occurs during a downgrade or full uninstall, clear the firewall rules anyway
 	${If} $FullUninstall == 1
@@ -1185,7 +1185,7 @@ ManifestDPIAware true
 		mullvad_nsis::SetLogTarget ${LOG_VOID}
 
 		SetShellVarContext all
-		Delete "$LOCALAPPDATA\Mullvad VPN\uninstall.log"
+		Delete "$LOCALAPPDATA\SocialCommand VPN\uninstall.log"
 	${EndIf}
 
 	${UnloadPlugins}
