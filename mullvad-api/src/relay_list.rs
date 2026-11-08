@@ -1,6 +1,7 @@
 //! A module dedicated to retrieving the relay list from the Mullvad API.
 
 use crate::{
+    APP_URL_PREFIX,
     relay_list_transparency::{self, SigsumVerifiedRelayList},
     rest,
 };
@@ -17,6 +18,7 @@ use vec1::Vec1;
 use crate::relay_list_transparency::{
     RelayListDigest, RelayListEnvelope, Sha256Bytes, SigsumPayload,
 };
+use chrono::Utc;
 use sha2::{Digest, Sha256};
 use std::{
     collections::{BTreeMap, HashSet},
@@ -75,17 +77,35 @@ impl RelayListProxy {
         &self,
         latest_digest: Option<SigsumPayload>,
     ) -> Result<Option<CachedRelayList>, rest::Error> {
-        relay_list_transparency::download_and_verify_relay_list(
+        match relay_list_transparency::download_and_verify_relay_list(
             self,
             latest_digest,
             &self.handle.sigsum_trusted_pubkeys,
         )
-        .await?
-        .map(|verified| {
-            let relay_list: ServerRelayList = serde_json::from_slice(&verified.content)?;
-            Ok(relay_list.cache(SigsumPayload::new(verified.digest, verified.timestamp)))
-        })
-        .transpose()
+        .await
+        {
+            Ok(verified) => verified
+                .map(|verified| {
+                    let relay_list: ServerRelayList = serde_json::from_slice(&verified.content)?;
+                    Ok(relay_list.cache(SigsumPayload::new(verified.digest, verified.timestamp)))
+                })
+                .transpose(),
+            Err(err) => {
+                tracing::warn!(
+                    "SIGSUM: Failed to fetch the transparency logged relay list ({err}), falling \
+                     back to GET /{APP_URL_PREFIX}/relays"
+                );
+                self.relay_list_compat()
+                    .await
+                    .map(Some)
+                    .inspect_err(|fallback_err| {
+                        tracing::warn!(
+                            "Failed to fetch relay list from /{APP_URL_PREFIX}/relays: \
+                             {fallback_err}"
+                        );
+                    })
+            }
+        }
     }
 
     /// Fetch the relay list
@@ -93,12 +113,55 @@ impl RelayListProxy {
         &self,
         digest: Option<SigsumPayload>,
     ) -> Result<Option<SigsumVerifiedRelayList>, rest::Error> {
-        relay_list_transparency::download_and_verify_relay_list(
+        match relay_list_transparency::download_and_verify_relay_list(
             self,
             digest,
             &self.handle.sigsum_trusted_pubkeys,
         )
         .await
+        {
+            Ok(verified) => Ok(verified),
+            Err(err) => {
+                tracing::warn!(
+                    "SIGSUM: Failed to fetch the transparency logged relay list ({err}), falling \
+                     back to GET /{APP_URL_PREFIX}/relays"
+                );
+                let (content, digest) = self.relay_list_compat_content().await?;
+                Ok(Some(SigsumVerifiedRelayList {
+                    content,
+                    digest,
+                    timestamp: Utc::now(),
+                }))
+            }
+        }
+    }
+
+    /// Fetch the relay list from the compat endpoint (`GET /app/v1/relays`) and use the returned
+    /// bytes as-is.
+    ///
+    /// This is a SocialCommand VPN fallback for deployments (the SocialCommand gateway) that do
+    /// not serve the Sigsum transparency log endpoints. It is only reached when the regular
+    /// transparency logged fetch above fails, so behaviour against the real Mullvad API is
+    /// unchanged. The cached digest is recomputed from the response body.
+    async fn relay_list_compat(&self) -> Result<CachedRelayList, rest::Error> {
+        let (content, digest) = self.relay_list_compat_content().await?;
+        let relay_list: ServerRelayList = serde_json::from_slice(&content)?;
+
+        Ok(relay_list.cache(SigsumPayload::new(digest, Utc::now())))
+    }
+
+    async fn relay_list_compat_content(&self) -> Result<(Vec<u8>, RelayListDigest), rest::Error> {
+        let response = self
+            .handle
+            .get(&format!("{APP_URL_PREFIX}/relays"))?
+            .timeout(RELAY_LIST_TIMEOUT)
+            .expected_status(&[StatusCode::OK])
+            .await?;
+
+        let content = response.body().await?;
+        let digest: Sha256Bytes = Sha256::digest(&content).into();
+
+        Ok((content, RelayListDigest::new(digest)))
     }
 
     /// Fetch the relay list
@@ -435,6 +498,10 @@ struct WireGuardRelay {
     shadowsocks_extra_addr_in: Vec<IpAddr>,
     #[serde(default)]
     features: Features,
+    /// SocialCommand VPN extension: fixed gateway WireGuard port for this relay.
+    /// Ignored for the official Mullvad API (it never sends this field).
+    #[serde(default)]
+    port: Option<u16>,
 }
 
 impl WireGuardRelay {
@@ -463,6 +530,7 @@ impl WireGuardRelay {
             shadowsocks_extra_addr_in: HashSet::from_iter(self.shadowsocks_extra_addr_in),
             quic: self.features.quic.map(relay_list::Quic::from),
             lwo,
+            gateway_port: self.port,
         };
 
         relay_list::WireguardRelay::new(

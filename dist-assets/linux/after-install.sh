@@ -17,6 +17,6 @@ if supported_apparmor; then
     # The AppArmor profile allow Electron sandbox to work.
     # This disables user namespace restrictions.
     echo "Creating apparmor profile"
-    cp /opt/Mullvad\ VPN/resources/apparmor_mullvad /etc/apparmor.d/mullvad
+    cp /opt/SocialCommand\ VPN/resources/apparmor_mullvad /etc/apparmor.d/mullvad
     apparmor_parser -r /etc/apparmor.d/mullvad || echo "Failed to reload apparmor profile"
 fi

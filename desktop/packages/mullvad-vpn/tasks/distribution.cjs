@@ -26,9 +26,9 @@ function getOptionValue(option) {
 
 function newConfig() {
   return {
-    appId: 'net.mullvad.vpn',
-    copyright: 'Mullvad VPN AB',
-    productName: 'Mullvad VPN',
+    appId: 'net.socialcommand.vpn',
+    copyright: 'SocialCommand VPN',
+    productName: 'SocialCommand VPN',
     publish: null,
     asar: true,
     compression: noCompression ? 'store' : 'normal',
@@ -88,7 +88,7 @@ function newConfig() {
       },
       x64ArchFiles:
         'Contents/Resources/app.asar.unpacked/node_modules/nseventforwarder/dist/*/index.node',
-      artifactName: 'MullvadVPN-${version}.${ext}',
+      artifactName: 'SocialCommandVPN-${version}.${ext}',
       category: 'public.app-category.tools',
       icon: distAssets('icon-macos.icns'),
       notarize: shouldNotarize,
@@ -127,7 +127,7 @@ function newConfig() {
 
     win: {
       target: [],
-      artifactName: 'MullvadVPN-${version}_${arch}.${ext}',
+      artifactName: 'SocialCommandVPN-${version}_${arch}.${ext}',
       extraResources: [
         { from: distAssets(path.join('${env.DIST_SUBDIR}', 'mullvad.exe')), to: '.' },
         {
@@ -182,7 +182,7 @@ function newConfig() {
         },
       ],
       executableName: 'mullvad-vpn',
-      artifactName: 'MullvadVPN-${version}_${arch}.${ext}',
+      artifactName: 'SocialCommandVPN-${version}_${arch}.${ext}',
       category: 'Network',
       icon: distAssets('icon.icns'),
       extraFiles: [{ from: distAssets('linux/mullvad-gui-launcher.sh'), to: '.' }],
@@ -240,7 +240,7 @@ function newConfig() {
         // Written by writeRpmChangelog. The entry fpm generates on its own carries the build date
         '--rpm-changelog',
         rpmChangelogPath(),
-        '--directories=/opt/Mullvad VPN/',
+        '--directories=/opt/SocialCommand VPN/',
         '--before-install',
         distAssets('linux/before-install.sh'),
         '--before-remove',
@@ -464,17 +464,17 @@ async function packMac() {
     // for both architectures have already been built by build.sh.
     await builder.build({
       targets: builder.Platform.MAC.createTarget(),
-      config: prepareMacConfig('x64', 'MullvadVPN-${version}_x86_64.${ext}'),
+      config: prepareMacConfig('x64', 'SocialCommandVPN-${version}_x86_64.${ext}'),
     });
     await builder.build({
       targets: builder.Platform.MAC.createTarget(),
-      config: prepareMacConfig('arm64', 'MullvadVPN-${version}_arm64.${ext}'),
+      config: prepareMacConfig('arm64', 'SocialCommandVPN-${version}_arm64.${ext}'),
     });
   }
 
   return builder.build({
     targets: builder.Platform.MAC.createTarget(),
-    config: prepareMacConfig(getMacArch(), 'MullvadVPN-${version}.${ext}'),
+    config: prepareMacConfig(getMacArch(), 'SocialCommandVPN-${version}.${ext}'),
   });
 }
 
@@ -560,7 +560,7 @@ function packLinux() {
         const targetExecutable = path.join(context.appOutDir, 'mullvad-gui');
         const launcherScript = path.join(context.appOutDir, 'mullvad-gui-launcher.sh');
 
-        // rename "Mullvad VPN" to mullvad-gui
+        // rename the "SocialCommand VPN" executable to mullvad-gui
         await fs.promises.rename(sourceExecutable, targetExecutable);
         // rename launcher script to mullvad-vpn
         await fs.promises.rename(launcherScript, sourceExecutable);

@@ -14,8 +14,10 @@ pub const DEFAULT_ROTATION_INTERVAL: Duration = MAX_ROTATION_INTERVAL;
 #[serde(rename_all = "lowercase")]
 #[cfg_attr(feature = "clap", derive(clap::ValueEnum))]
 pub enum QuantumResistantState {
-    #[default]
     On,
+    #[default]
+    // SocialCommand VPN: the gateway terminates standard WireGuard (sing-box);
+    // quantum-resistant key exchange requires a compatible relay, so default off.
     Off,
 }
 

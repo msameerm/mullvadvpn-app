@@ -322,7 +322,7 @@ export class ErrorNotificationProvider
           steps: [
             messages.pgettext(
               'troubleshoot',
-              'Enable “Full Disk Access” for “Mullvad VPN” in the macOS system settings.',
+              'Enable “Full Disk Access” for “SocialCommand VPN” in the macOS system settings.',
             ),
           ],
           buttons: troubleshootButtons,

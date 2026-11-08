@@ -20,7 +20,7 @@ CARGO_TARGET_DIR=${CARGO_TARGET_DIR:-"target"}
 
 echo "Computing build version..."
 PRODUCT_VERSION=$(cargo run -q --bin mullvad-version)
-log_header "Building Mullvad VPN $PRODUCT_VERSION"
+log_header "Building SocialCommand VPN $PRODUCT_VERSION"
 
 # If compiler optimization and artifact compression should be turned on or not
 OPTIMIZE="false"
@@ -368,7 +368,7 @@ done
 # Package app.
 ################################################################################
 
-log_header "Preparing for packaging Mullvad VPN $PRODUCT_VERSION"
+log_header "Preparing for packaging SocialCommand VPN $PRODUCT_VERSION"
 
 if [[ "$(uname -s)" == "Darwin" || "$(uname -s)" == "Linux" ]]; then
     mkdir -p "build/shell-completions"
@@ -471,7 +471,7 @@ if [[ "$DAEMON_ONLY" == "false" ]]; then
 
     pushd packages/mullvad-vpn
 
-    log_header "Packing Mullvad VPN $PRODUCT_VERSION artifact(s)"
+    log_header "Packing SocialCommand VPN $PRODUCT_VERSION artifact(s)"
 
     case "$(uname -s)" in
         Linux*)     npm run pack:linux -- "${NPM_PACK_ARGS[@]}";;
@@ -481,7 +481,7 @@ if [[ "$DAEMON_ONLY" == "false" ]]; then
     popd
     popd
 else
-    log_header "Packing Mullvad VPN daemon-only packages $PRODUCT_VERSION"
+    log_header "Packing SocialCommand VPN daemon-only packages $PRODUCT_VERSION"
 
     build_daemon_packages
 fi
@@ -508,7 +508,7 @@ if [[ "$UNIVERSAL" == "true" && "$(uname -s)" == "MINGW"* ]]; then
         assert_clean_working_directory
         # Unlike the per-architecture installers, which electron-builder signs, this one is
         # packed by us and has to be signed here.
-        sign_win "dist/MullvadVPN-${PRODUCT_VERSION}.exe"
+        sign_win "dist/SocialCommandVPN-${PRODUCT_VERSION}.exe"
     fi
 fi
 

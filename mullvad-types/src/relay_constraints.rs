@@ -598,8 +598,10 @@ impl fmt::Display for WireguardConstraintsFormatter<'_> {
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "clap", derive(clap::ValueEnum))]
 pub enum SelectedObfuscation {
-    #[default]
     Auto,
+    #[default]
+    // SocialCommand VPN: the gateway speaks plain WireGuard; auto obfuscation
+    // (UDP2TCP/Shadowsocks/QUIC/LWO) has no server counterpart.
     Off,
     WireguardPort,
     #[cfg_attr(feature = "clap", clap(name = "udp2tcp"))]

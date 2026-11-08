@@ -114,7 +114,7 @@ export class MacOsSplitTunnelingAppListRetriever implements ISplitTunnelingAppLi
       return (
         parsedFilePath.ext === '.app' &&
         !parsedFilePath.name.startsWith('.') &&
-        parsedFilePath.name !== 'Mullvad VPN'
+        parsedFilePath.name !== 'SocialCommand VPN'
       );
     });
   }

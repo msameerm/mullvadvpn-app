@@ -1,19 +1,19 @@
-# Systemd service unit file for the Mullvad VPN daemon
+# Systemd service unit file for the SocialCommand VPN daemon
 
 [Unit]
-Description=Mullvad VPN daemon
+Description=SocialCommand VPN daemon
 Before=network-online.target
 After=mullvad-early-boot-blocking.service network.target
 
 StartLimitBurst=5
 StartLimitIntervalSec=20
-RequiresMountsFor=/opt/Mullvad\x20VPN/resources/
+RequiresMountsFor=/opt/SocialCommand\x20VPN/resources/
 
 [Service]
 Restart=always
 RestartSec=1
 ExecStart=/usr/bin/mullvad-daemon -vv --disable-stdout-timestamps
-Environment="MULLVAD_RESOURCE_DIR=/opt/Mullvad VPN/resources/"
+Environment="MULLVAD_RESOURCE_DIR=/opt/SocialCommand VPN/resources/"
 
 # SIGUSR1 causes the daemon to enter lockdown mode before stopping.
 # Lockdown mode is cleared when the daemon is started again.

@@ -202,7 +202,7 @@ class ApplicationMain
     log.info(`Running version ${this.version.currentVersion.gui}`);
 
     if (process.platform === 'win32') {
-      app.setAppUserModelId('net.mullvad.vpn');
+      app.setAppUserModelId('net.socialcommand.vpn');
     }
 
     // While running in development the watch script triggers a reload of the renderer by sending
@@ -1293,8 +1293,8 @@ class ApplicationMain
 }
 
 if (CommandLineOptions.help.match) {
-  console.log('Mullvad VPN');
-  console.log('Graphical interface for managing the Mullvad VPN daemon');
+  console.log('SocialCommand VPN');
+  console.log('Graphical interface for managing the SocialCommand VPN daemon');
 
   console.log('');
   console.log('OPTIONS:');

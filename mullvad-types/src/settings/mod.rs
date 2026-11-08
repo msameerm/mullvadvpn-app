@@ -259,7 +259,10 @@ impl Default for Settings {
             // created yet so that we don't affect existing users' relay settings.
             update_default_location: true,
             obfuscation_settings: ObfuscationSettings {
-                selected_obfuscation: SelectedObfuscation::Auto,
+                // SocialCommand VPN: the gateway serves plain WireGuard only, so
+                // automatic obfuscation (UDP2TCP/Shadowsocks/QUIC/LWO) would make
+                // the tunnel fail.  Users can still opt in explicitly.
+                selected_obfuscation: SelectedObfuscation::Off,
                 ..Default::default()
             },
             custom_lists: CustomListsSettings::default(),

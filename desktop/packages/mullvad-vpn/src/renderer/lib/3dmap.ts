@@ -43,12 +43,12 @@ export enum ConnectionState {
 }
 
 // Color of "space" as seen in the corners when zooming out
-const spaceColor: ColorRgba = [10 / 255, 25 / 255, 35 / 255, 1];
+const spaceColor: ColorRgba = [7 / 255, 12 / 255, 30 / 255, 1.0];
 // Color values for various components of the map.
-const landColor: ColorRgba = [0.16, 0.302, 0.45, 1.0];
-const oceanColor: ColorRgba = [0.098, 0.18, 0.271, 1.0];
-// The color of borders between geographical entities
-const contourColor: ColorRgba = oceanColor;
+const landColor: ColorRgba = [28 / 255, 62 / 255, 135 / 255, 1.0];
+const oceanColor: ColorRgba = [11 / 255, 20 / 255, 48 / 255, 1.0];
+// The color of borders between geographical entities (SocialCommand accent blue)
+const contourColor: ColorRgba = [41 / 255, 132 / 255, 249 / 255, 0.85];
 
 // The green color of the location marker when in the secured state
 const locationMarkerSecureColor: ColorRgb = [0.267, 0.678, 0.302];

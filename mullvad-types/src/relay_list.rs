@@ -451,6 +451,15 @@ pub struct WireguardRelayEndpointData {
     /// Optional IP addresses used by Shadowsocks
     #[serde(default)]
     pub shadowsocks_extra_addr_in: HashSet<IpAddr>,
+    /// SocialCommand VPN extension: a fixed WireGuard gateway port for this relay.
+    ///
+    /// The official relay-list schema has no per-relay port, so a client can only pick a
+    /// relay by IP address.  Our gateway serves many locations from one public IP, so the
+    /// relay list it serves includes a per-relay port; when present it overrides the global
+    /// `wireguard.port_ranges` selection.  Absent for the real Mullvad API, which keeps the
+    /// upstream behaviour unchanged.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub gateway_port: Option<u16>,
 }
 
 impl WireguardRelayEndpointData {
@@ -461,6 +470,7 @@ impl WireguardRelayEndpointData {
             quic: Default::default(),
             lwo: Default::default(),
             shadowsocks_extra_addr_in: Default::default(),
+            gateway_port: None,
         }
     }
 

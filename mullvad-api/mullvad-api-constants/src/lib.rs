@@ -8,9 +8,16 @@ pub mod env {
     pub const SIGSUM_TRUSTED_PUBKEYS_VAR: &str = "MULLVAD_SIGSUM_TRUSTED_PUBKEYS";
 }
 
-pub const API_HOST_DEFAULT: &str = "api.mullvad.net";
-pub const PARTNER_API_HOST_DEFAULT: &str = "partner.mullvad.net";
-pub const API_IP_DEFAULT: IpAddr = IpAddr::V4(Ipv4Addr::new(45, 83, 223, 196));
+// SocialCommand VPN gateway defaults.
+//
+// Live deployment (2026-11-08): the gateway runs on Sameer's VPS and is served by
+// Caddy with a public Let's Encrypt certificate (TLS 1.3 only, `default_sni`
+// because the client sends no SNI).  Override at runtime with MULLVAD_API_HOST /
+// MULLVAD_API_ADDR in development builds (the `api-override` feature); release
+// builds always use these constants.
+pub const API_HOST_DEFAULT: &str = "vpn.socialcommand.site";
+pub const PARTNER_API_HOST_DEFAULT: &str = "vpn.socialcommand.site";
+pub const API_IP_DEFAULT: IpAddr = IpAddr::V4(Ipv4Addr::new(169, 58, 191, 8));
 pub const API_PORT_DEFAULT: u16 = 443;
 pub const SIGSUM_TRUSTED_PUBKEYS_DEFAULT: &str = include_str!("trusted-sigsum-signing-pubkeys");
 

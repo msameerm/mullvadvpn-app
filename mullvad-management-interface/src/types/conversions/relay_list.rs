@@ -251,6 +251,8 @@ impl From<mullvad_types::relay_list::WireguardRelay> for proto::Relay {
                     quic,
                     lwo,
                     shadowsocks_extra_addr_in,
+                    // Internal routing detail; not exposed over the management interface.
+                    gateway_port: _,
                 },
             inner:
                 mullvad_types::relay_list::Relay {
@@ -400,6 +402,8 @@ impl TryFrom<proto::Relay> for mullvad_types::relay_list::WireguardRelay {
                     .map_err(|_err| {
                         FromProtobufTypeError::invalid_argument("Invalid IP address")
                     })?,
+                // Internal routing detail; not transported over the management interface.
+                gateway_port: None,
             }
         };
 

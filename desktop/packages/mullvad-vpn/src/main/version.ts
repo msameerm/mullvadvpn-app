@@ -86,6 +86,9 @@ export default class Version {
     const upgradeVersion = {
       ...latestVersionInfo,
       suggestedIsBeta,
+      // SocialCommand VPN: there is no signed Mullvad update feed behind this
+      // gateway, so never mark the app as unsupported or nag to update.
+      supported: true,
     };
 
     this.upgradeVersionData = upgradeVersion;
@@ -93,7 +96,7 @@ export default class Version {
     // notify user to update the app if it became unsupported
     const notificationProviders = [
       new UnsupportedVersionNotificationProvider({
-        supported: latestVersionInfo.supported,
+        supported: true,
         consistent: this.currentVersionData.isConsistent,
         suggestedUpgrade: latestVersionInfo.suggestedUpgrade,
         suggestedIsBeta,

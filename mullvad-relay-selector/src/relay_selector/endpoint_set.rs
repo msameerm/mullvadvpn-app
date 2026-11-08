@@ -79,6 +79,10 @@ struct WireguardEndpoints {
     ipv4: Ipv4Addr,
     ipv6: Option<Ipv6Addr>,
     port_ranges: Vec1<RangeInclusive<u16>>,
+    /// SocialCommand VPN extension: a fixed gateway port advertised per relay.
+    /// When present it takes precedence over `port_ranges` (the official Mullvad
+    /// API never sets it, so upstream behaviour is unchanged).
+    fixed_port: Option<u16>,
 }
 
 /// Shadowsocks obfuscation endpoints.
@@ -131,6 +135,7 @@ impl RelayEndpointSet {
             ipv4: relay.ipv4_addr_in,
             ipv6: relay.ipv6_addr_in,
             port_ranges: wg_port_ranges,
+            fixed_port: relay.endpoint_data.gateway_port,
         };
 
         let shadowsocks = ShadowsocksEndpoints::new(relay, endpoint_data);
@@ -359,7 +364,13 @@ impl WireguardEndpoints {
 
     /// Whether the WireGuard endpoint supports the given port.
     fn supports_port(&self, port: Constraint<u16>) -> bool {
-        port_in_ranges(&self.port_ranges, port)
+        match self.fixed_port {
+            Some(fixed) => match port {
+                Constraint::Any => true,
+                Constraint::Only(port) => port == fixed,
+            },
+            None => port_in_ranges(&self.port_ranges, port),
+        }
     }
 
     fn random_endpoint(
@@ -368,6 +379,14 @@ impl WireguardEndpoints {
         port: Constraint<u16>,
     ) -> Option<SocketAddr> {
         let ip = self.select_ip(ip_version)?;
+        // A server-advertised fixed port wins over the global port ranges: the
+        // SocialCommand gateway maps each relay to its own UDP port.
+        if let Some(fixed) = self.fixed_port {
+            if matches!(port, Constraint::Any) || port == Constraint::Only(fixed) {
+                return Some(SocketAddr::new(ip, fixed));
+            }
+            return None;
+        }
         let port = random_port_in_ranges(&self.port_ranges, port)?;
         Some(SocketAddr::new(ip, port))
     }

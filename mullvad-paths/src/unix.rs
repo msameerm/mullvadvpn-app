@@ -6,7 +6,9 @@ use std::{
 
 use crate::{Error, Result, UserPermissions};
 
-pub const PRODUCT_NAME: &str = "mullvad-vpn";
+// SocialCommand VPN: use a dedicated product name so this app's settings,
+// cache and logs never collide with an installed stock Mullvad VPN app.
+pub const PRODUCT_NAME: &str = "socialcommand-vpn";
 
 impl UserPermissions {
     fn fs_permissions(self) -> fs::Permissions {

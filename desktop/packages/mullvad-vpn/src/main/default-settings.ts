@@ -37,7 +37,7 @@ export function getDefaultSettings(): ISettings {
     tunnelOptions: {
       enableIpv6: false,
       mtu: undefined,
-      quantumResistant: true,
+      quantumResistant: false, // SocialCommand gateway uses standard WireGuard
       daita: false,
       dns: {
         state: 'default',
@@ -55,7 +55,7 @@ export function getDefaultSettings(): ISettings {
       },
     },
     obfuscationSettings: {
-      selectedObfuscation: ObfuscationType.auto,
+      selectedObfuscation: ObfuscationType.off, // no obfuscation server on the SocialCommand gateway
       udp2tcpSettings: {
         port: 'any',
       },
