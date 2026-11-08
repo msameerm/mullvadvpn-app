@@ -66,7 +66,7 @@ pub fn find_traces() -> Result<Vec<AppTrace>, Error> {
         &caches,
         Path::new(r"/opt/Mullvad VPN/"),
         // management interface socket
-        Path::new(r"/var/run/mullvad-vpn"),
+        Path::new(r"/var/run/socialcommand-vpn"),
         // service unit config files
         Path::new(r"/usr/lib/systemd/system/mullvad-daemon.service"),
         Path::new(r"/usr/lib/systemd/system/mullvad-early-boot-blocking.service"),
@@ -98,9 +98,9 @@ pub fn find_traces() -> Result<Vec<AppTrace>, Error> {
         Path::new(r"/var/log/mullvad-vpn/"),
         &caches,
         // management interface socket
-        Path::new(r"/var/run/mullvad-vpn"),
+        Path::new(r"/var/run/socialcommand-vpn"),
         // launch daemon
-        Path::new(r"/Library/LaunchDaemons/net.mullvad.daemon.plist"),
+        Path::new(r"/Library/LaunchDaemons/net.socialcommand.vpn.daemon.plist"),
         Path::new(r"/usr/local/bin/mullvad"),
         Path::new(r"/usr/local/bin/mullvad-problem-report"),
         // completions

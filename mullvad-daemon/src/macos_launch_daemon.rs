@@ -11,7 +11,7 @@ use objc2_service_management::{SMAppService, SMAppServiceStatus};
 /// Path to the plist that defines the Mullvad launch daemon.
 /// It must be kept in sync with the path defined in
 /// `dist-assets/pkg-scripts/postinstall`.
-const DAEMON_PLIST_PATH: &str = "/Library/LaunchDaemons/net.mullvad.daemon.plist";
+const DAEMON_PLIST_PATH: &str = "/Library/LaunchDaemons/net.socialcommand.vpn.daemon.plist";
 
 /// Authorization status of the Mullvad daemon.
 #[repr(i32)]

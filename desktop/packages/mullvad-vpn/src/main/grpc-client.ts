@@ -46,7 +46,7 @@ export class ConnectionObserver {
 }
 
 export const GRPC_CLIENT_PATH =
-  process.platform === 'win32' ? '//./pipe/Mullvad VPN' : '/var/run/mullvad-vpn';
+  process.platform === 'win32' ? '//./pipe/Mullvad VPN' : '/var/run/socialcommand-vpn';
 
 export abstract class GrpcClient<
   Client extends ManagementServiceClient | RelaySelectorServiceClient,

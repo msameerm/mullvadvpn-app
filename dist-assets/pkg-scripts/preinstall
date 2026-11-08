@@ -28,7 +28,12 @@ sudo -u nobody "$INSTALL_DIR/SocialCommand VPN.app/Contents/Resources/mullvad-se
 
 # NOTE: This path must be kept in sync with the path defined
 # in mullvad-daemon/src/macos_launch_daemon.rs and postinstall
-DAEMON_PLIST_PATH="/Library/LaunchDaemons/net.mullvad.daemon.plist"
+DAEMON_PLIST_PATH="/Library/LaunchDaemons/net.socialcommand.vpn.daemon.plist"
+# Remove any daemon installed by the stock Mullvad app or older SocialCommand builds.
+if [[ -f /Library/LaunchDaemons/net.mullvad.daemon.plist ]]; then
+    launchctl unload -w /Library/LaunchDaemons/net.mullvad.daemon.plist 2>/dev/null || true
+    rm -f /Library/LaunchDaemons/net.mullvad.daemon.plist
+fi
 launchctl unload -w $DAEMON_PLIST_PATH || echo "Failed to unload old mullvad-daemon"
 
 # For good measure, delete old application directories that may prevent install/upgrade.

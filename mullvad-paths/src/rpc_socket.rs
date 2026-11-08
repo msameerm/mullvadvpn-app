@@ -9,7 +9,7 @@ pub fn get_rpc_socket_path() -> PathBuf {
 
 #[cfg(any(target_os = "linux", target_os = "macos"))]
 pub fn get_default_rpc_socket_path() -> PathBuf {
-    PathBuf::from("/var/run/mullvad-vpn")
+    PathBuf::from("/var/run/socialcommand-vpn")
 }
 
 #[cfg(windows)]

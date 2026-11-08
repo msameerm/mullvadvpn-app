@@ -29,7 +29,7 @@ echo "Stopping GUI process ..."
 sudo pkill -x "SocialCommand VPN" || echo "No GUI process found"
 
 echo "Stopping and unloading mullvad-daemon system daemon ..."
-DAEMON_PLIST_PATH="/Library/LaunchDaemons/net.mullvad.daemon.plist"
+DAEMON_PLIST_PATH="/Library/LaunchDaemons/net.socialcommand.vpn.daemon.plist"
 sudo launchctl unload -w "$DAEMON_PLIST_PATH"
 sudo rm -f "$DAEMON_PLIST_PATH"
 

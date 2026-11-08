@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use test_rpc::{meta::OsVersion, mullvad_daemon::Verbosity};
 
-const PLIST_OVERRIDE_FILE: &str = "/Library/LaunchDaemons/net.mullvad.daemon.plist";
+const PLIST_OVERRIDE_FILE: &str = "/Library/LaunchDaemons/net.socialcommand.vpn.daemon.plist";
 
 /// Restart the Mullvad VPN application.
 ///
