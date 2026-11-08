@@ -52,7 +52,7 @@ android {
     ndkVersion = libs.versions.ndk.get()
 
     defaultConfig {
-        applicationId = "net.mullvad.mullvadvpn"
+        applicationId = "net.socialcommand.vpn"
         minSdk = libs.versions.min.sdk.get().toInt()
         targetSdk = libs.versions.target.sdk.get().toInt()
         versionCode = appVersion.code
