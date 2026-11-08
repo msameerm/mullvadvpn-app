@@ -746,10 +746,7 @@ ManifestDPIAware true
 
 	${ExtractMullvadSetup}
 
-	${RemoveAbandonedWireGuardNt}
-	# Ignoring errors ($R0 != 0) here
-
-	${RemoveSplitTunnelDriver}
+	# SocialCommand: do not remove drivers shared with the stock Mullvad app on install.
 
 	${If} $R0 != 0
 		MessageBox MB_OK "$R0"
@@ -1164,9 +1161,7 @@ ManifestDPIAware true
 		${ClearFirewallRules}
 		${RemoveCurrentDevice}
 
-		${ExtractWireGuard}
-		${RemoveWintun}
-		${RemoveWireGuardNt}
+		# SocialCommand: keep Wintun/WireGuard-NT drivers (they may be shared with the stock app).
 
 		mullvad_nsis::SetLogTarget ${LOG_VOID}
 
@@ -1178,7 +1173,7 @@ ManifestDPIAware true
 		${EndIf}
 
 		${RemoveSettings}
-		DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "net.mullvad.vpn"
+		DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "SocialCommand VPN"
 
 		customRemoveFiles_after_remove_settings:
 	${Else}

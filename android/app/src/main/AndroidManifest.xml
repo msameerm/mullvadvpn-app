@@ -78,7 +78,7 @@
             tools:ignore="DiscouragedApi,UnusedAttribute">
 
             <intent-filter>
-                <action android:name="net.mullvad.mullvadvpn.request_vpn_permission" />
+                <action android:name="net.socialcommand.vpn.request_vpn_permission" />
             </intent-filter>
         </activity>
         <!--
@@ -95,16 +95,16 @@
                 <action android:name="android.net.VpnService" />
             </intent-filter>
             <intent-filter>
-                <action android:name="net.mullvad.mullvadvpn.connect_action" />
+                <action android:name="net.socialcommand.vpn.connect_action" />
             </intent-filter>
             <intent-filter>
-                <action android:name="net.mullvad.mullvadvpn.reconnect_action" />
+                <action android:name="net.socialcommand.vpn.reconnect_action" />
             </intent-filter>
             <intent-filter>
-                <action android:name="net.mullvad.mullvadvpn.disconnect_action" />
+                <action android:name="net.socialcommand.vpn.disconnect_action" />
             </intent-filter>
             <intent-filter>
-                <action android:name="net.mullvad.mullvadvpn.quit_action" />
+                <action android:name="net.socialcommand.vpn.quit_action" />
             </intent-filter>
         </service>
         <!--

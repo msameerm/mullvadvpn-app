@@ -1,11 +1,10 @@
-// This should only contain links to the mullvad website
-// No links to other websites should be added
+// SocialCommand VPN support links. No links to other websites should be added.
 export const urls = {
-  purchase: 'https://mullvad.net/account/',
-  faq: 'https://mullvad.net/help/tag/mullvad-app/',
-  privacyGuide: 'https://mullvad.net/help/first-steps-towards-online-privacy/',
-  download: 'https://mullvad.net/download/vpn/',
-  lanShare: 'https://mullvad.net/help/using-mullvad-vpn-app#lan-share',
+  purchase: 'https://wa.me/447598789403',
+  faq: 'https://wa.me/447598789403',
+  privacyGuide: 'https://wa.me/447598789403',
+  download: 'https://wa.me/447598789403',
+  lanShare: 'https://wa.me/447598789403',
 } as const;
 
 type BaseUrl = (typeof urls)[keyof typeof urls];

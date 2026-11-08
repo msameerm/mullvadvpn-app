@@ -28,7 +28,7 @@
             <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
         </intent-filter>
         <intent-filter>
-            <action android:name="net.mullvad.mullvadvpn.request_vpn_permission" />
+            <action android:name="net.socialcommand.vpn.request_vpn_permission" />
         </intent-filter>
     </activity-alias>
     <!-- Game -->
@@ -51,7 +51,7 @@
             <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
         </intent-filter>
         <intent-filter>
-            <action android:name="net.mullvad.mullvadvpn.request_vpn_permission" />
+            <action android:name="net.socialcommand.vpn.request_vpn_permission" />
         </intent-filter>
     </activity-alias>
     <!-- Weather -->
@@ -74,7 +74,7 @@
             <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
         </intent-filter>
         <intent-filter>
-            <action android:name="net.mullvad.mullvadvpn.request_vpn_permission" />
+            <action android:name="net.socialcommand.vpn.request_vpn_permission" />
         </intent-filter>
     </activity-alias>
     <!-- Notes -->
@@ -97,7 +97,7 @@
             <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
         </intent-filter>
         <intent-filter>
-            <action android:name="net.mullvad.mullvadvpn.request_vpn_permission" />
+            <action android:name="net.socialcommand.vpn.request_vpn_permission" />
         </intent-filter>
     </activity-alias>
     <!-- Ninja -->
@@ -120,7 +120,7 @@
             <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
         </intent-filter>
         <intent-filter>
-            <action android:name="net.mullvad.mullvadvpn.request_vpn_permission" />
+            <action android:name="net.socialcommand.vpn.request_vpn_permission" />
         </intent-filter>
     </activity-alias>
     <!-- Browser -->
@@ -143,7 +143,7 @@
             <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
         </intent-filter>
         <intent-filter>
-            <action android:name="net.mullvad.mullvadvpn.request_vpn_permission" />
+            <action android:name="net.socialcommand.vpn.request_vpn_permission" />
         </intent-filter>
     </activity-alias>
     </application>

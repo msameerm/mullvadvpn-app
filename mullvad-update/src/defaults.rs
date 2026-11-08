@@ -8,11 +8,11 @@ use vec1::Vec1;
 ///
 /// Note that this is just a proxy to _some_ of the files in [METADATA_URL].
 #[cfg(feature = "client")]
-pub const RELEASES_URL: &str = "https://api.mullvad.net/app/releases/";
+pub const RELEASES_URL: &str = "https://vpn.socialcommand.site/app/releases/";
 
 /// Default URL for version metadata repository.
 #[cfg(feature = "release-tooling")]
-pub const METADATA_URL: &str = "https://releases.mullvad.net/desktop/metadata/";
+pub const METADATA_URL: &str = "https://vpn.socialcommand.site/desktop/metadata/";
 
 /// Pubkeys used to verify metadata from the Mullvad API (production)
 pub static TRUSTED_METADATA_SIGNING_PUBKEYS: LazyLock<Vec1<VerifyingKey>> =
