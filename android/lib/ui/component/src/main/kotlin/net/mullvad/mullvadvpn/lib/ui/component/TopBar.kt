@@ -146,29 +146,34 @@ fun MullvadTopBar(
                         modifier = Modifier.size(40.dp),
                         tint = Color.Unspecified, // Logo should not be tinted
                     )
-                    // Dynamically show Mullvad VPN Text if it fits, to avoid overlapping icons.
+                    // SocialCommand VPN wordmark: scale to fit instead of hiding it
+                    // when the top bar is crowded (longer brand name).
                     BoxWithConstraints {
                         val logoTextPainter = painterResource(id = R.drawable.logo_text)
                         val logoHeight = Dimens.mediumPadding
                         val logoStartEndPadding = Dimens.smallPadding
 
-                        val shouldShowText =
-                            remember(maxWidth) {
-                                val logoHeightWidthRatio =
-                                    logoTextPainter.intrinsicSize.width /
-                                        logoTextPainter.intrinsicSize.height
-                                val expectedLength = logoHeightWidthRatio * logoHeight.value
-                                maxWidth > (expectedLength + logoStartEndPadding.value * 2).dp
-                            }
+                        val logoHeightWidthRatio =
+                            logoTextPainter.intrinsicSize.width /
+                                logoTextPainter.intrinsicSize.height
+                        val availableWidth = maxWidth - (logoStartEndPadding * 2)
+                        val fittedHeight =
+                            minOf(
+                                logoHeight,
+                                (availableWidth / logoHeightWidthRatio).coerceAtLeast(0.dp),
+                            )
 
-                        if (shouldShowText) {
+                        if (fittedHeight.value > 8f) {
                             Icon(
                                 painter = painterResource(id = R.drawable.logo_text),
                                 tint = iconTintColor,
                                 contentDescription = null, // No meaningful user info or action.
                                 modifier =
                                     Modifier.padding(horizontal = logoStartEndPadding)
-                                        .height(logoHeight),
+                                        .size(
+                                            width = fittedHeight * logoHeightWidthRatio,
+                                            height = fittedHeight,
+                                        ),
                             )
                         }
                     }
