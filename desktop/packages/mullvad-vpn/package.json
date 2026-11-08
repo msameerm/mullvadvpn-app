@@ -6,8 +6,8 @@
   "description": "SocialCommand VPN client",
   "main": "build/main.js",
   "author": {
-    "name": "Sameer",
-    "email": "sameer@socialcommand.vpn"
+    "name": "SocialCommand VPN",
+    "email": "support@socialcommand.vpn"
   },
   "type": "module",
   "repository": "https://github.com/mullvad/mullvadvpn-app",
