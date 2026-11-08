@@ -24,6 +24,10 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 120
     steps:
+      - name: Enable Windows long paths
+        shell: bash
+        run: git config --system core.longpaths true
+
       - name: Checkout (with submodules)
         uses: actions/checkout@v4
         with:
