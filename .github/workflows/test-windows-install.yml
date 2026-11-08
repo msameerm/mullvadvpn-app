@@ -1,0 +1,65 @@
+name: test-windows-install
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'Build run id containing SocialCommandVPN-windows artifact'
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  test:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - name: Download installer artifact
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          gh run download ${{ inputs.run_id }} -R ${{ github.repository }} -n SocialCommandVPN-windows -D dist
+          Get-ChildItem dist -Recurse -Filter *.exe | Format-Table Name,Length
+
+      - name: Install silently
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem dist -Recurse -Filter *.exe | Select-Object -First 1
+          Write-Host "Installing $($exe.FullName)"
+          $p = Start-Process -FilePath $exe.FullName -ArgumentList '/S' -Wait -PassThru
+          Write-Host "installer exit code: $($p.ExitCode)"
+          Start-Sleep -Seconds 15
+          Get-Service SocialCommandVPN | Format-List Name,Status,DisplayName
+
+      - name: Login, connect and verify internet
+        shell: pwsh
+        run: |
+          $m = "C:\Program Files\SocialCommand VPN\resources\mullvad.exe"
+          if (-not (Test-Path $m)) { throw "mullvad CLI not found at $m" }
+          & $m account login "${{ secrets.TEST_KEY }}"
+          & $m tunnel set quantum-resistant off
+          & $m anti-censorship set mode off
+          & $m relay set location se sto
+          & $m connect
+          Start-Sleep -Seconds 25
+          & $m status -v
+          $r = Invoke-RestMethod -Uri "https://am.i.mullvad.net/json" -TimeoutSec 40
+          $r | ConvertTo-Json -Depth 4
+          if (-not $r.mullvad_exit_ip) { throw "FAIL: traffic is not exiting through the SocialCommand gateway" }
+          if ($r.country -ne "Sweden") { throw "FAIL: unexpected exit country $($r.country)" }
+          Write-Host "PASS: connected and internet works through $($r.ip) ($($r.country), $($r.city))"
+          & $m disconnect
+
+      - name: Uninstall
+        if: always()
+        shell: pwsh
+        run: |
+          $u = "C:\Program Files\SocialCommand VPN\Uninstall SocialCommand VPN.exe"
+          if (Test-Path $u) { Start-Process -FilePath $u -ArgumentList '/S' -Wait | Out-Null }
+          Start-Sleep -Seconds 5
+          Get-Service SocialCommandVPN -ErrorAction SilentlyContinue | Format-List Name,Status
