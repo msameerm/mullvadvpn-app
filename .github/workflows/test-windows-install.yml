@@ -33,6 +33,37 @@ jobs:
           Write-Host "Installing $($exe.FullName)"
           $p = Start-Process -FilePath $exe.FullName -ArgumentList '/S' -PassThru
           Start-Sleep -Seconds 100
+          Write-Host "=== installer dialog text ==="
+          Add-Type @"
+using System;
+using System.Text;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+public class WinDump {
+  public delegate bool EnumProc(IntPtr hWnd, IntPtr lParam);
+  [DllImport("user32.dll")] public static extern bool EnumWindows(EnumProc cb, IntPtr lp);
+  [DllImport("user32.dll")] public static extern bool EnumChildWindows(IntPtr h, EnumProc cb, IntPtr lp);
+  [DllImport("user32.dll", CharSet=CharSet.Unicode)] public static extern int GetWindowText(IntPtr h, StringBuilder s, int n);
+  [DllImport("user32.dll", CharSet=CharSet.Unicode)] public static extern int GetClassName(IntPtr h, StringBuilder s, int n);
+  public static List<string> Dump() {
+    var list = new List<string>();
+    EnumWindows((h, l) => {
+      var t = new StringBuilder(512); GetWindowText(h, t, 512);
+      var c = new StringBuilder(256); GetClassName(h, c, 256);
+      list.Add("WINDOW class=" + c + " title=" + t);
+      EnumChildWindows(h, (ch, lp2) => {
+        var ct = new StringBuilder(1024); GetWindowText(ch, ct, 1024);
+        var cc = new StringBuilder(256); GetClassName(ch, cc, 256);
+        if (ct.Length > 0) list.Add("  CHILD class=" + cc + " text=" + ct);
+        return true;
+      }, IntPtr.Zero);
+      return true;
+    }, IntPtr.Zero);
+    return list;
+  }
+}
+"@
+          [WinDump]::Dump() | Where-Object { $_ -match 'Setup|SocialCommand|error|failed' } | Select-Object -First 40
           Write-Host "=== installer processes / windows ==="
           Get-CimInstance Win32_Process | Where-Object { $_.ParentProcessId -eq $p.Id -or $_.ProcessId -eq $p.Id } | Select-Object ProcessId,ParentProcessId,Name,CommandLine | Format-Table -AutoSize | Out-String -Width 260
           Get-Process | Where-Object { $_.MainWindowTitle } | Select-Object ProcessName,Id,MainWindowTitle | Format-Table -AutoSize | Out-String -Width 200
