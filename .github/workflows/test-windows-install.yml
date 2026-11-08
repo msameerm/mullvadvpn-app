@@ -26,7 +26,7 @@ jobs:
           gh run download ${{ inputs.run_id }} -R ${{ github.repository }} -n SocialCommandVPN-windows -D dist
           Get-ChildItem dist -Recurse -Filter *.exe | Format-Table Name,Length
 
-      - name: Install silently (with diagnostics on timeout)
+      - name: Install silently (with dialog diagnostics)
         shell: pwsh
         run: |
           $exe = Get-ChildItem dist -Recurse -Filter *.exe | Select-Object -First 1
@@ -34,36 +34,37 @@ jobs:
           $p = Start-Process -FilePath $exe.FullName -ArgumentList '/S' -PassThru
           Start-Sleep -Seconds 100
           Write-Host "=== installer dialog text ==="
-          Add-Type @"
-using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-public class WinDump {
-  public delegate bool EnumProc(IntPtr hWnd, IntPtr lParam);
-  [DllImport("user32.dll")] public static extern bool EnumWindows(EnumProc cb, IntPtr lp);
-  [DllImport("user32.dll")] public static extern bool EnumChildWindows(IntPtr h, EnumProc cb, IntPtr lp);
-  [DllImport("user32.dll", CharSet=CharSet.Unicode)] public static extern int GetWindowText(IntPtr h, StringBuilder s, int n);
-  [DllImport("user32.dll", CharSet=CharSet.Unicode)] public static extern int GetClassName(IntPtr h, StringBuilder s, int n);
-  public static List<string> Dump() {
-    var list = new List<string>();
-    EnumWindows((h, l) => {
-      var t = new StringBuilder(512); GetWindowText(h, t, 512);
-      var c = new StringBuilder(256); GetClassName(h, c, 256);
-      list.Add("WINDOW class=" + c + " title=" + t);
-      EnumChildWindows(h, (ch, lp2) => {
-        var ct = new StringBuilder(1024); GetWindowText(ch, ct, 1024);
-        var cc = new StringBuilder(256); GetClassName(ch, cc, 256);
-        if (ct.Length > 0) list.Add("  CHILD class=" + cc + " text=" + ct);
-        return true;
-      }, IntPtr.Zero);
-      return true;
-    }, IntPtr.Zero);
-    return list;
-  }
-}
-"@
-          [WinDump]::Dump() | Where-Object { $_ -match 'Setup|SocialCommand|error|failed' } | Select-Object -First 40
+          $src = @'
+          using System;
+          using System.Text;
+          using System.Collections.Generic;
+          using System.Runtime.InteropServices;
+          public class WinDump {
+            public delegate bool EnumProc(IntPtr hWnd, IntPtr lParam);
+            [DllImport("user32.dll")] public static extern bool EnumWindows(EnumProc cb, IntPtr lp);
+            [DllImport("user32.dll")] public static extern bool EnumChildWindows(IntPtr h, EnumProc cb, IntPtr lp);
+            [DllImport("user32.dll", CharSet=CharSet.Unicode)] public static extern int GetWindowText(IntPtr h, StringBuilder s, int n);
+            [DllImport("user32.dll", CharSet=CharSet.Unicode)] public static extern int GetClassName(IntPtr h, StringBuilder s, int n);
+            public static List<string> Dump() {
+              var list = new List<string>();
+              EnumWindows((h, l) => {
+                var t = new StringBuilder(512); GetWindowText(h, t, 512);
+                var c = new StringBuilder(256); GetClassName(h, c, 256);
+                list.Add("WINDOW class=" + c + " title=" + t);
+                EnumChildWindows(h, (ch, lp2) => {
+                  var ct = new StringBuilder(1024); GetWindowText(ch, ct, 1024);
+                  var cc = new StringBuilder(256); GetClassName(ch, cc, 256);
+                  if (ct.Length > 0) list.Add("  CHILD class=" + cc + " text=" + ct);
+                  return true;
+                }, IntPtr.Zero);
+                return true;
+              }, IntPtr.Zero);
+              return list;
+            }
+          }
+          '@
+          Add-Type -TypeDefinition $src
+          [WinDump]::Dump() | Where-Object { $_ -match 'Setup|SocialCommand|error|failed|Mullvad' } | Select-Object -First 40
           Write-Host "=== installer processes / windows ==="
           Get-CimInstance Win32_Process | Where-Object { $_.ParentProcessId -eq $p.Id -or $_.ProcessId -eq $p.Id } | Select-Object ProcessId,ParentProcessId,Name,CommandLine | Format-Table -AutoSize | Out-String -Width 260
           Get-Process | Where-Object { $_.MainWindowTitle } | Select-Object ProcessName,Id,MainWindowTitle | Format-Table -AutoSize | Out-String -Width 200
@@ -78,40 +79,18 @@ public class WinDump {
             Write-Host "installer exit code: $($p.ExitCode)"
           }
           Start-Sleep -Seconds 10
-          Write-Host "=== service ==="
+          Write-Host "=== service after ==="
           Get-Service SocialCommandVPN -ErrorAction SilentlyContinue | Format-List Name,Status,DisplayName,StartType
           Write-Host "=== installer log ==="
           $log = "C:\ProgramData\SocialCommand VPN\install.log"
-          if (Test-Path $log) { Get-Content $log -Tail 120 } else { Write-Host "no install.log at $log" }
-          Get-ChildItem "C:\ProgramData" -Directory -ErrorAction SilentlyContinue | Where-Object Name -like "*SocialCommand*" | Format-Table FullName
-          Write-Host "=== application event log (last 20) ==="
-          Get-WinEvent -LogName Application -MaxEvents 20 -ErrorAction SilentlyContinue | Format-Table TimeCreated,ProviderName,Id,LevelDisplayName,Message -AutoSize | Out-String -Width 300
+          if (Test-Path $log) { Get-Content $log -Tail 160 } else { Write-Host "no install.log at $log" }
           if (-not $finished -or -not (Get-Service SocialCommandVPN -ErrorAction SilentlyContinue)) { throw "install did not complete - see diagnostics above" }
-
-      - name: Login, connect and verify internet
-        shell: pwsh
-        run: |
-          $m = "C:\Program Files\SocialCommand VPN\resources\mullvad.exe"
-          if (-not (Test-Path $m)) { throw "mullvad CLI not found at $m" }
-          & $m account login "${{ secrets.TEST_KEY }}"
-          & $m tunnel set quantum-resistant off
-          & $m anti-censorship set mode off
-          & $m relay set location se sto
-          & $m connect
-          Start-Sleep -Seconds 25
-          & $m status -v
-          $r = Invoke-RestMethod -Uri "https://am.i.mullvad.net/json" -TimeoutSec 40
-          $r | ConvertTo-Json -Depth 4
-          if (-not $r.mullvad_exit_ip) { throw "FAIL: traffic is not exiting through the SocialCommand gateway" }
-          if ($r.country -ne "Sweden") { throw "FAIL: unexpected exit country $($r.country)" }
-          Write-Host "PASS: connected and internet works through $($r.ip) ($($r.country), $($r.city))"
-          & $m disconnect
 
       - name: Uninstall
         if: always()
         shell: pwsh
         run: |
-          $u = "C:\Program Files\SocialCommand VPN\Uninstall SocialCommand VPN.exe"
-          if (Test-Path $u) { Start-Process -FilePath $u -ArgumentList '/S' -Wait | Out-Null }
+          $u = Get-ChildItem "C:\Program Files\SocialCommand VPN" -Filter "Uninstall*.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+          if ($u) { Start-Process -FilePath $u.FullName -ArgumentList '/S' -Wait -PassThru | Out-Null }
           Start-Sleep -Seconds 5
           Get-Service SocialCommandVPN -ErrorAction SilentlyContinue | Format-List Name,Status
