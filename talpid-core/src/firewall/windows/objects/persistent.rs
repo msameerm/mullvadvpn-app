@@ -157,15 +157,15 @@ fn is_ephemeral(provider: Option<GUID>) -> bool {
 /// block-all filters.
 fn add_persistent_objects(transaction: &Transaction<'_>) -> Result<(), Error> {
     ProviderBuilder::default()
-        .name("Mullvad VPN persistent")
-        .description("Mullvad VPN firewall integration")
+        .name("SocialCommand VPN persistent")
+        .description("SocialCommand VPN firewall integration")
         .guid(guids::PROVIDER_PERSISTENT)
         .persistent()
         .add(transaction)
         .map_err(Error::AddPersistent)?;
 
     SubLayerBuilder::default()
-        .name("Mullvad VPN persistent")
+        .name("SocialCommand VPN persistent")
         .description("Filters that restrict traffic before WinFw is initialized")
         .guid(guids::SUBLAYER_PERSISTENT)
         .provider(guids::PROVIDER_PERSISTENT)

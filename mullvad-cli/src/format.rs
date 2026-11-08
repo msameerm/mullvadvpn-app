@@ -300,7 +300,7 @@ fn print_error_state(error_state: &ErrorState) {
             println!("Blocked: {cause}");
             println!();
             println!(
-                r#"Enable "Full Disk Access" for "Mullvad VPN" in the macOS system settings:"#
+                r#"Enable "Full Disk Access" for "SocialCommand VPN" in the macOS system settings:"#
             );
             println!(
                 r#"open "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles""#

@@ -40,8 +40,8 @@ pub fn get_default_log_dir() -> Result<PathBuf> {
 pub fn frontend_log_dir() -> Result<PathBuf> {
     use crate::Error;
     let mullvad_dir = cfg_select! {
-        any(target_os = "linux", target_os = "windows") => { "Mullvad VPN/logs" }
-        target_os = "macos" => { "Library/Logs/Mullvad VPN" }
+        any(target_os = "linux", target_os = "windows") => { "SocialCommand VPN/logs" }
+        target_os = "macos" => { "Library/Logs/SocialCommand VPN" }
     };
     local_log_dir()
         .map(|config_dir| config_dir.join(mullvad_dir))

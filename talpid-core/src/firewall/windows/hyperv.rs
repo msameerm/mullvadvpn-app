@@ -1,10 +1,10 @@
 use wmi::{IWbemClassWrapper, WMIConnection, WMIError};
 
 /// Name of the blocking Hyper-V rule.
-const BLOCK_OUTBOUND_RULE_ELEMENT_NAME: &str = "Mullvad VPN outbound block-all rule";
+const BLOCK_OUTBOUND_RULE_ELEMENT_NAME: &str = "SocialCommand VPN outbound block-all rule";
 
 /// Name of the blocking Hyper-V rule.
-const BLOCK_INBOUND_RULE_ELEMENT_NAME: &str = "Mullvad VPN inbound block-all rule";
+const BLOCK_INBOUND_RULE_ELEMENT_NAME: &str = "SocialCommand VPN inbound block-all rule";
 
 /// Unique instance ID identifying the outbound blocking Hyper-V rule.
 const BLOCK_OUTBOUND_RULE_UUID: &str = "{319400cb-0445-4c1b-a081-1cbc57cdbcb8}";

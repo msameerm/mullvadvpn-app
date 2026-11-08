@@ -11,7 +11,7 @@ ProductName = "Mullvad VPN"
 CompanyName = "Mullvad VPN AB"
 LegalCopyright = "(c) 2026 Mullvad VPN AB"
 InternalName = "mullvad-installer"
-OriginalFilename = "MullvadVPN.exe"
+OriginalFilename = "SocialCommandVPN.exe"
 
 [build-dependencies]
 anyhow.workspace = true
