@@ -18,7 +18,7 @@
     <string name="daita" translatable="false">DAITA</string>
     <string name="daita_full" translatable="false">Defence against AI-guided Traffic Analysis</string>
     <string name="support_email" translatable="false">support@mullvadvpn.net</string>
-    <string name="support_email_subject" translatable="false">Mullvad VPN App %s Android %s (%d) - %s %s</string>
+    <string name="support_email_subject" translatable="false">SocialCommand VPN App %s Android %s (%d) - %s %s</string>
     <string name="app_name_game" translatable="false">Whack-a-mole</string>
     <string name="app_name_ninja" translatable="false">Ninja Mole</string>
     <string name="domain_fronting" translatable="false">Domain Fronting</string>
