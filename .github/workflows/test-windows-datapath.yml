@@ -35,7 +35,7 @@ jobs:
         shell: pwsh
         run: |
           $root = "C:\Program Files\SocialCommand VPN"
-          $daemon = Join-Path $root "mullvad-daemon.exe"
+          $daemon = Join-Path $root "resources\mullvad-daemon.exe"
           & $daemon --register-service
           Start-Sleep -Seconds 3
           sc.exe start SocialCommandVPN
@@ -46,7 +46,7 @@ jobs:
       - name: Login, connect and verify internet
         shell: pwsh
         run: |
-          $m = "C:\Program Files\SocialCommand VPN\mullvad.exe"
+          $m = "C:\Program Files\SocialCommand VPN\resources\mullvad.exe"
           Start-Sleep -Seconds 5
           & $m account login "${{ secrets.TEST_KEY }}"
           & $m tunnel set quantum-resistant off
@@ -65,7 +65,7 @@ jobs:
         if: always()
         shell: pwsh
         run: |
-          sc.exe stop SocialCommandVPN 2>$null
-          sc.exe delete SocialCommandVPN 2>$null
+          cmd /c "sc stop SocialCommandVPN >nul 2>&1" | Out-Null
+          cmd /c "sc delete SocialCommandVPN >nul 2>&1" | Out-Null
           Get-Process mullvad-daemon -ErrorAction SilentlyContinue | Stop-Process -Force
           Remove-Item -Recurse -Force "C:\Program Files\SocialCommand VPN" -ErrorAction SilentlyContinue
