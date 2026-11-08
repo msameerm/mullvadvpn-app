@@ -55,6 +55,16 @@ jobs:
           & $m connect
           Start-Sleep -Seconds 25
           & $m status -v
+          Write-Host "=== DNS config ==="
+          Get-DnsClientServerAddress | Where-Object {$_.ServerAddresses} | Format-Table InterfaceAlias,AddressFamily,ServerAddresses -AutoSize
+          Write-Host "=== nslookup via 10.64.0.1 ==="
+          nslookup am.i.mullvad.net 10.64.0.1 2>&1 | Out-String -Width 200
+          Write-Host "=== nslookup default ==="
+          nslookup am.i.mullvad.net 2>&1 | Out-String -Width 200
+          Write-Host "=== data path by IP (no DNS) ==="
+          curl.exe -k -s --max-time 25 https://45.83.223.233/json 2>&1 | Out-String -Width 300
+          Write-Host "=== data path plain IP http ==="
+          curl.exe -s --max-time 25 http://1.1.1.1/cdn-cgi/trace 2>&1 | Select-Object -First 8
           $r = Invoke-RestMethod -Uri "https://am.i.mullvad.net/json" -TimeoutSec 40
           $r | ConvertTo-Json -Depth 4
           if (-not $r.mullvad_exit_ip) { throw "FAIL: not exiting through gateway" }
