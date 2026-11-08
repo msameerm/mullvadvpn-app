@@ -46,7 +46,13 @@ jobs:
 
       - name: Verify Rust toolchain
         shell: bash
-        run: rustup show && cargo --version
+        run: |
+          rustup show
+          rustup component add rust-std --toolchain 1.97.1 || true
+          cargo --version
+          rustc --version
+          printf 'fn main() {}' > /tmp/hello.rs
+          rustc /tmp/hello.rs -o /tmp/hello.exe && echo HOST_STD_OK
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
