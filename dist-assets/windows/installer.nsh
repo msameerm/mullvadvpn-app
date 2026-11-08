@@ -858,7 +858,7 @@ ManifestDPIAware true
 
 	# Show appropriate message about failed update depending on whether /inapp is specified
 	${If} $0 == 1
-		MessageBox MB_OK "The update could not be installed and the previous version is missing. Please download the app again from mullvad.net/download and reinstall. If that fails, please try restarting your computer and try again."
+		MessageBox MB_OK "The update could not be installed and the previous version is missing. Please contact SocialCommand support (https://wa.me/447598789403) and reinstall. If that fails, please try restarting your computer and try again."
 	${Else}
 		MessageBox MB_OK "Failed to uninstall a previous version. Please try restarting your computer and try again. If you still have this issue, please contact support."
 	${EndIf}
