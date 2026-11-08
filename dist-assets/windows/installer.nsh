@@ -268,7 +268,7 @@ ManifestDPIAware true
 	Pop $1
 
 	${If} $0 != 0
-		StrCpy $R0 "Failed to install Mullvad service"
+		StrCpy $R0 "Failed to install SocialCommand VPN service"
 		mullvad_nsis::LogWithDetails $R0 $1
 
 		#
@@ -287,7 +287,7 @@ ManifestDPIAware true
 	${EndIf}
 
 	mullvad_nsis::Log "Starting service"
-	nsExec::ExecToStack '"$SYSDIR\sc.exe" start mullvadvpn'
+	nsExec::ExecToStack '"$SYSDIR\sc.exe" start SocialCommandVPN'
 
 	Pop $0
 	Pop $1
@@ -297,7 +297,7 @@ ManifestDPIAware true
 		${If} $0 == ${ERROR_SERVICE_DEPENDENCY_DELETED}
 			StrCpy $R0 'Failed to start Mullvad service: The firewall service "Base Filtering Engine" is missing or unavailable.'
 		${Else}
-			StrCpy $R0 "Failed to start Mullvad service: error $0"
+			StrCpy $R0 "Failed to start SocialCommand VPN service: error $0"
 		${EndIf}
 		mullvad_nsis::LogWithDetails $R0 $1
 		Goto InstallService_return
@@ -894,7 +894,7 @@ ManifestDPIAware true
 	Push $0
 	Push $1
 
-	nsExec::ExecToStack '"$SYSDIR\sc.exe" query mullvadvpn'
+	nsExec::ExecToStack '"$SYSDIR\sc.exe" query SocialCommandVPN'
 
 	Pop $0
 	Pop $1
@@ -903,9 +903,9 @@ ManifestDPIAware true
 		Goto StopAndDeleteService_success
 	${EndIf}
 
-	mullvad_nsis::Log "Stopping Mullvad service"
+	mullvad_nsis::Log "Stopping SocialCommand VPN service"
 
-	nsExec::ExecToStack '"$SYSDIR\net.exe" stop mullvadvpn'
+	nsExec::ExecToStack '"$SYSDIR\net.exe" stop SocialCommandVPN'
 
 	Pop $0
 	Pop $1
@@ -921,8 +921,8 @@ ManifestDPIAware true
 	SetShellVarContext all
 	CopyFiles /SILENT /FILESONLY "$LOCALAPPDATA\Mullvad VPN\daemon.log" "$LOCALAPPDATA\Mullvad VPN\old-install-daemon.log"
 
-	mullvad_nsis::Log "Removing Mullvad service"
-	nsExec::ExecToStack '"$SYSDIR\sc.exe" delete mullvadvpn'
+	mullvad_nsis::Log "Removing SocialCommand VPN service"
+	nsExec::ExecToStack '"$SYSDIR\sc.exe" delete SocialCommandVPN'
 
 	Pop $0
 	Pop $R0
@@ -945,15 +945,15 @@ ManifestDPIAware true
 
 	StopAndDeleteService_check_delete:
 
-	nsExec::ExecToStack '"$SYSDIR\sc.exe" query mullvadvpn'
+	nsExec::ExecToStack '"$SYSDIR\sc.exe" query SocialCommandVPN'
 
 	Pop $0
 	Pop $1
 
 	${If} $0 != ${ERROR_SERVICE_DOES_NOT_EXIST}
-		mullvad_nsis::Log "Attempting to forcibly kill Mullvad service"
+		mullvad_nsis::Log "Attempting to forcibly kill SocialCommand VPN service"
 
-		nsExec::ExecToStack '"$SYSDIR\taskkill.exe" /f /fi "SERVICES eq mullvadvpn"'
+		nsExec::ExecToStack '"$SYSDIR\taskkill.exe" /f /fi "SERVICES eq SocialCommandVPN"'
 		Pop $0
 		Pop $1
 
@@ -964,7 +964,7 @@ ManifestDPIAware true
 			Goto StopAndDeleteService_check_delete
 		${EndIf}
 
-		StrCpy $R0 "Failed to kill Mullvad service"
+		StrCpy $R0 "Failed to kill SocialCommand VPN service"
 		mullvad_nsis::Log $R0
 		Goto StopAndDeleteService_return_only
 	${EndIf}

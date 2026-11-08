@@ -50,7 +50,7 @@ pub fn terminate_processes(
     dir_path: impl AsRef<Path>,
     allow_cancellation: bool,
 ) -> anyhow::Result<bool> {
-    const MULLVAD_SERVICE: *const u16 = windows_sys::w!("mullvadvpn");
+    const MULLVAD_SERVICE: *const u16 = windows_sys::w!("SocialCommandVPN");
 
     // Text-Encoded session key defined in RestartManager.h
     // WCHAR sessKey[CCH_RM_SESSION_KEY+1];
