@@ -1,0 +1,71 @@
+name: test-windows-datapath
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'Build run id containing SocialCommandVPN-windows artifact'
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  test:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - name: Download and extract installer payload
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          New-Item -ItemType Directory -Force -Path dist,extract,"C:\Program Files\SocialCommand VPN" | Out-Null
+          gh run download ${{ inputs.run_id }} -R ${{ github.repository }} -n SocialCommandVPN-windows -D dist
+          $exe = Get-ChildItem dist -Recurse -Filter *.exe | Select-Object -First 1
+          $7z = "C:\Program Files\7-Zip\7z.exe"
+          & $7z x -y -o"$PWD\extract" "$($exe.FullName)" | Select-Object -Last 3
+          $payload = Get-ChildItem extract -Recurse -Filter app-64.7z | Select-Object -First 1
+          & $7z x -y -o"C:\Program Files\SocialCommand VPN" "$($payload.FullName)" | Select-Object -Last 3
+          Get-ChildItem "C:\Program Files\SocialCommand VPN" | Select-Object Name,Length
+
+      - name: Register and start daemon service manually
+        shell: pwsh
+        run: |
+          $root = "C:\Program Files\SocialCommand VPN"
+          $daemon = Join-Path $root "mullvad-daemon.exe"
+          & $daemon --register-service
+          Start-Sleep -Seconds 3
+          sc.exe start SocialCommandVPN
+          Start-Sleep -Seconds 10
+          Get-Service SocialCommandVPN | Format-List Name,Status,DisplayName
+          sc.exe query SocialCommandVPN
+
+      - name: Login, connect and verify internet
+        shell: pwsh
+        run: |
+          $m = "C:\Program Files\SocialCommand VPN\mullvad.exe"
+          Start-Sleep -Seconds 5
+          & $m account login "${{ secrets.TEST_KEY }}"
+          & $m tunnel set quantum-resistant off
+          & $m anti-censorship set mode off
+          & $m relay set location se sto
+          & $m connect
+          Start-Sleep -Seconds 25
+          & $m status -v
+          $r = Invoke-RestMethod -Uri "https://am.i.mullvad.net/json" -TimeoutSec 40
+          $r | ConvertTo-Json -Depth 4
+          if (-not $r.mullvad_exit_ip) { throw "FAIL: not exiting through gateway" }
+          Write-Host "PASS: internet works through $($r.ip) ($($r.country), $($r.city))"
+          & $m disconnect
+
+      - name: Cleanup
+        if: always()
+        shell: pwsh
+        run: |
+          sc.exe stop SocialCommandVPN 2>$null
+          sc.exe delete SocialCommandVPN 2>$null
+          Get-Process mullvad-daemon -ErrorAction SilentlyContinue | Stop-Process -Force
+          Remove-Item -Recurse -Force "C:\Program Files\SocialCommand VPN" -ErrorAction SilentlyContinue
