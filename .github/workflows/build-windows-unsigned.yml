@@ -42,13 +42,14 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: "1.97.1"
-          targets: x86_64-pc-windows-msvc
+          targets: x86_64-pc-windows-msvc,aarch64-pc-windows-msvc
 
       - name: Verify Rust toolchain
         shell: bash
         run: |
           rustup show
-          rustup component add rust-std --toolchain 1.97.1 || true
+          rustup target add --toolchain 1.97.1 x86_64-pc-windows-msvc aarch64-pc-windows-msvc
+          rustup target list --installed --toolchain 1.97.1
           cargo --version
           rustc --version
           printf 'fn main() {}' > /tmp/hello.rs
