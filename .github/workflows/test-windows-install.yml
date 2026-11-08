@@ -26,15 +26,29 @@ jobs:
           gh run download ${{ inputs.run_id }} -R ${{ github.repository }} -n SocialCommandVPN-windows -D dist
           Get-ChildItem dist -Recurse -Filter *.exe | Format-Table Name,Length
 
-      - name: Install silently
+      - name: Install silently (with diagnostics on timeout)
         shell: pwsh
         run: |
           $exe = Get-ChildItem dist -Recurse -Filter *.exe | Select-Object -First 1
           Write-Host "Installing $($exe.FullName)"
-          $p = Start-Process -FilePath $exe.FullName -ArgumentList '/S' -Wait -PassThru
-          Write-Host "installer exit code: $($p.ExitCode)"
-          Start-Sleep -Seconds 15
-          Get-Service SocialCommandVPN | Format-List Name,Status,DisplayName
+          $p = Start-Process -FilePath $exe.FullName -ArgumentList '/S' -PassThru
+          $finished = $p.WaitForExit(300000)
+          if (-not $finished) {
+            Write-Host "INSTALLER TIMED OUT (still running after 5 min) - killing"
+            Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+          } else {
+            Write-Host "installer exit code: $($p.ExitCode)"
+          }
+          Start-Sleep -Seconds 10
+          Write-Host "=== service ==="
+          Get-Service SocialCommandVPN -ErrorAction SilentlyContinue | Format-List Name,Status,DisplayName,StartType
+          Write-Host "=== installer log ==="
+          $log = "C:\ProgramData\SocialCommand VPN\install.log"
+          if (Test-Path $log) { Get-Content $log -Tail 120 } else { Write-Host "no install.log at $log" }
+          Get-ChildItem "C:\ProgramData" -Directory -ErrorAction SilentlyContinue | Where-Object Name -like "*SocialCommand*" | Format-Table FullName
+          Write-Host "=== application event log (last 20) ==="
+          Get-WinEvent -LogName Application -MaxEvents 20 -ErrorAction SilentlyContinue | Format-Table TimeCreated,ProviderName,Id,LevelDisplayName,Message -AutoSize | Out-String -Width 300
+          if (-not $finished -or -not (Get-Service SocialCommandVPN -ErrorAction SilentlyContinue)) { throw "install did not complete - see diagnostics above" }
 
       - name: Login, connect and verify internet
         shell: pwsh
