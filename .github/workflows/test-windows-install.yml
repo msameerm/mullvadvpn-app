@@ -32,9 +32,16 @@ jobs:
           $exe = Get-ChildItem dist -Recurse -Filter *.exe | Select-Object -First 1
           Write-Host "Installing $($exe.FullName)"
           $p = Start-Process -FilePath $exe.FullName -ArgumentList '/S' -PassThru
-          $finished = $p.WaitForExit(300000)
+          Start-Sleep -Seconds 100
+          Write-Host "=== installer processes / windows ==="
+          Get-CimInstance Win32_Process | Where-Object { $_.ParentProcessId -eq $p.Id -or $_.ProcessId -eq $p.Id } | Select-Object ProcessId,ParentProcessId,Name,CommandLine | Format-Table -AutoSize | Out-String -Width 260
+          Get-Process | Where-Object { $_.MainWindowTitle } | Select-Object ProcessName,Id,MainWindowTitle | Format-Table -AutoSize | Out-String -Width 200
+          Write-Host "=== service state during install ==="
+          sc.exe query SocialCommandVPN
+          Get-Service SocialCommandVPN -ErrorAction SilentlyContinue | Format-List Name,Status
+          $finished = $p.WaitForExit(120000)
           if (-not $finished) {
-            Write-Host "INSTALLER TIMED OUT (still running after 5 min) - killing"
+            Write-Host "INSTALLER STILL RUNNING after ~3.5 min - killing"
             Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
           } else {
             Write-Host "installer exit code: $($p.ExitCode)"
