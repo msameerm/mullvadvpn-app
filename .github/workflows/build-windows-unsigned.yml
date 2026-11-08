@@ -1,0 +1,56 @@
+# Build an unsigned SocialCommand VPN Windows installer on GitHub Actions.
+#
+# Why CI: the Windows app contains MSVC/C++ components (winfw firewall module,
+# libwfp, NSIS plugins) that cannot be compiled on macOS or Linux. A Windows
+# runner (or a real Windows machine) is required.
+#
+# To use:
+#   1. Push this repository to GitHub (private is fine) with submodules.
+#   2. Copy this file to .github/workflows/build-windows-unsigned.yml
+#   3. Actions -> "build-windows-unsigned" -> Run workflow
+#   4. Download the "SocialCommandVPN-windows" artifact from the run.
+#
+# Signing: this artifact is UNSIGNED. Windows SmartScreen will warn until the
+# installer/exe are signed with an OV or EV Authenticode certificate. To sign,
+# add the repo's normal signing secrets (see scripts/sign-windows.sh and
+# docs/CLIENT_REBRAND.md) and run with signing enabled.
+name: build-windows-unsigned
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install protoc
+        run: choco install protoc -y
+
+      - name: Build installer (unsigned)
+        shell: bash
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+        run: ./build.sh --optimize
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: SocialCommandVPN-windows
+          path: |
+            dist/*.exe
+            dist/*.msi
+          if-no-files-found: error
