@@ -38,8 +38,15 @@ jobs:
         with:
           node-version: 22
 
-      - name: Setup Rust
+      - name: Setup Rust (pinned toolchain)
         uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: "1.97.1"
+          targets: x86_64-pc-windows-msvc
+
+      - name: Verify Rust toolchain
+        shell: bash
+        run: rustup show && cargo --version
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
