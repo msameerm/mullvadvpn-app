@@ -2,8 +2,8 @@
 set -eu
 
 chmod u+s "/usr/bin/mullvad-exclude"
-ln -sf /opt/Mullvad\ VPN/resources/mullvad-problem-report /usr/bin/mullvad-problem-report
+ln -sf /opt/SocialCommand\ VPN/resources/mullvad-problem-report /usr/bin/mullvad-problem-report
 
-systemctl enable "/usr/lib/systemd/system/mullvad-daemon.service"
-systemctl start mullvad-daemon.service || echo "Failed to start mullvad-daemon.service"
-systemctl enable "/usr/lib/systemd/system/mullvad-early-boot-blocking.service"
+systemctl enable "/usr/lib/systemd/system/socialcommand-vpn.service"
+systemctl start socialcommand-vpn.service || echo "Failed to start socialcommand-vpn.service"
+systemctl enable "/usr/lib/systemd/system/socialcommand-vpn-early-boot-blocking.service"

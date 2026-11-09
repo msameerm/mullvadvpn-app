@@ -2,9 +2,9 @@
 set -eu
 
 function remove_logs_and_cache {
-  rm -r --interactive=never /var/log/mullvad-vpn/ || \
+  rm -r --interactive=never /var/log/socialcommand-vpn/ || \
     echo "Failed to remove mullvad-vpn logs"
-  rm -r --interactive=never /var/cache/mullvad-vpn/ || \
+  rm -r --interactive=never /var/cache/socialcommand-vpn/ || \
     echo "Failed to remove mullvad-vpn cache"
 }
 
@@ -29,7 +29,7 @@ function clear_gpu_cache {
 }
 
 function remove_config {
-  rm -r --interactive=never /etc/mullvad-vpn || \
+  rm -r --interactive=never /etc/socialcommand-vpn || \
     echo "Failed to remove mullvad-vpn config"
 
   # Remove app settings and auto-launcher for all users. This doesn't respect XDG_CONFIG_HOME due
@@ -44,7 +44,7 @@ function remove_config {
               echo "Failed to remove mullvad-vpn app settings"
       fi
 
-      local autostart_path="$home_dir/.config/autostart/mullvad-vpn.desktop"
+      local autostart_path="$home_dir/.config/autostart/socialcommand-vpn.desktop"
       # mullvad-vpn.desktop can be both a file or a symlink.
       if [[ -f "$autostart_path" || -L "$autostart_path" ]]; then
           echo "Removing mullvad-vpn app autostart file $autostart_path"
@@ -76,7 +76,7 @@ esac
 clear_gpu_cache
 
 # Remove apparmor profile
-if apparmor_parser -R /etc/apparmor.d/mullvad &>/dev/null; then
+if apparmor_parser -R /etc/apparmor.d/socialcommand-vpn &>/dev/null; then
     echo "Removing apparmor profile"
-    rm -f /etc/apparmor.d/mullvad || echo "Failed to delete apparmor profile"
+    rm -f /etc/apparmor.d/socialcommand-vpn || echo "Failed to delete apparmor profile"
 fi

@@ -181,7 +181,7 @@ function newConfig() {
           arch: getLinuxTargetArch(),
         },
       ],
-      executableName: 'mullvad-vpn',
+      executableName: 'socialcommand-vpn',
       artifactName: 'SocialCommandVPN-${version}_${arch}.${ext}',
       category: 'Network',
       icon: distAssets('icon.icns'),
@@ -202,10 +202,10 @@ function newConfig() {
         distAssets('linux/before-install.sh'),
         '--before-remove',
         distAssets('linux/before-remove.sh'),
-        distAssets('linux/mullvad-daemon.service') +
-          '=/usr/lib/systemd/system/mullvad-daemon.service',
-        distAssets('linux/mullvad-early-boot-blocking.service') +
-          '=/usr/lib/systemd/system/mullvad-early-boot-blocking.service',
+        distAssets('linux/socialcommand-vpn.service') +
+          '=/usr/lib/systemd/system/socialcommand-vpn.service',
+        distAssets('linux/socialcommand-vpn-early-boot-blocking.service') +
+          '=/usr/lib/systemd/system/socialcommand-vpn-early-boot-blocking.service',
         distAssets(path.join(getLinuxTargetSubdir(), 'mullvad')) + '=/usr/bin/',
         distAssets(path.join(getLinuxTargetSubdir(), 'mullvad-daemon')) + '=/usr/bin/',
         distAssets(path.join(getLinuxTargetSubdir(), 'mullvad-exclude')) + '=/usr/bin/',
@@ -247,10 +247,10 @@ function newConfig() {
         distAssets('linux/before-remove.sh'),
         '--rpm-posttrans',
         distAssets('linux/post-transaction.sh'),
-        distAssets('linux/mullvad-daemon.service') +
-          '=/usr/lib/systemd/system/mullvad-daemon.service',
-        distAssets('linux/mullvad-early-boot-blocking.service') +
-          '=/usr/lib/systemd/system/mullvad-early-boot-blocking.service',
+        distAssets('linux/socialcommand-vpn.service') +
+          '=/usr/lib/systemd/system/socialcommand-vpn.service',
+        distAssets('linux/socialcommand-vpn-early-boot-blocking.service') +
+          '=/usr/lib/systemd/system/socialcommand-vpn-early-boot-blocking.service',
         distAssets(path.join(getLinuxTargetSubdir(), 'mullvad')) + '=/usr/bin/',
         distAssets(path.join(getLinuxTargetSubdir(), 'mullvad-daemon')) + '=/usr/bin/',
         distAssets(path.join(getLinuxTargetSubdir(), 'mullvad-exclude')) + '=/usr/bin/',

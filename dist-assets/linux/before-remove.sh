@@ -3,9 +3,9 @@ set -eu
 
 echo "Running before-remove.sh"
 # SIGTERM for some reason causes the app to crash sometimes and SIGINT works as expected.
-pkill -2 -x "mullvad-gui" || true
+pkill -2 -x "socialcommand-vpn" || true
 sleep 0.5
-pkill -9 -x "mullvad-gui" || true
+pkill -9 -x "socialcommand-vpn" || true
 
 is_number_re='^[0-9]+$'
 # Check if we're running during an upgrade step on Fedora
@@ -19,10 +19,10 @@ if [[ "$1" == "upgrade" ]]; then
 fi
 
 # the user might've disabled or stopped the service themselves already
-systemctl stop mullvad-daemon.service || true
-systemctl disable mullvad-daemon.service || true
-systemctl stop mullvad-early-boot-blocking.service || true
-systemctl disable mullvad-early-boot-blocking.service || true
+systemctl stop socialcommand-vpn.service || true
+systemctl disable socialcommand-vpn.service || true
+systemctl stop socialcommand-vpn-early-boot-blocking.service || true
+systemctl disable socialcommand-vpn-early-boot-blocking.service || true
 
-/opt/Mullvad\ VPN/resources/mullvad-setup reset-firewall || echo "Failed to reset firewall"
-/opt/Mullvad\ VPN/resources/mullvad-setup remove-device || echo "Failed to remove device from account"
+/opt/SocialCommand\ VPN/resources/mullvad-setup reset-firewall || echo "Failed to reset firewall"
+/opt/SocialCommand\ VPN/resources/mullvad-setup remove-device || echo "Failed to remove device from account"

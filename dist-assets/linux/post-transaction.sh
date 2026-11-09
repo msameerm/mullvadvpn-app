@@ -6,8 +6,8 @@ set -eu
 # Repeated enablement of the daemon service will result in the early-boot unit
 # being executed when the daemon is already running, which results in the
 # firewall rules being applied.
-if ! systemctl is-enabled mullvad-daemon; then
-    systemctl enable "/usr/lib/systemd/system/mullvad-daemon.service" || true
-    systemctl start mullvad-daemon.service || true
-    systemctl enable "/usr/lib/systemd/system/mullvad-early-boot-blocking.service" || true
+if ! systemctl is-enabled socialcommand-vpn; then
+    systemctl enable "/usr/lib/systemd/system/socialcommand-vpn.service" || true
+    systemctl start socialcommand-vpn.service || true
+    systemctl enable "/usr/lib/systemd/system/socialcommand-vpn-early-boot-blocking.service" || true
 fi

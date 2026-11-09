@@ -3,9 +3,9 @@ set -eu
 
 chmod u+s "/usr/bin/mullvad-exclude"
 
-systemctl enable "/usr/lib/systemd/system/mullvad-daemon.service"
-systemctl start mullvad-daemon.service || echo "Failed to start mullvad-daemon.service"
-systemctl enable "/usr/lib/systemd/system/mullvad-early-boot-blocking.service"
+systemctl enable "/usr/lib/systemd/system/socialcommand-vpn.service"
+systemctl start socialcommand-vpn.service || echo "Failed to start socialcommand-vpn.service"
+systemctl enable "/usr/lib/systemd/system/socialcommand-vpn-early-boot-blocking.service"
 
 # Check if the system supports a new-enough AppArmor version.
 function supported_apparmor() {
@@ -17,6 +17,6 @@ if supported_apparmor; then
     # The AppArmor profile allow Electron sandbox to work.
     # This disables user namespace restrictions.
     echo "Creating apparmor profile"
-    cp /opt/SocialCommand\ VPN/resources/apparmor_mullvad /etc/apparmor.d/mullvad
-    apparmor_parser -r /etc/apparmor.d/mullvad || echo "Failed to reload apparmor profile"
+    cp /opt/SocialCommand\ VPN/resources/apparmor_socialcommand-vpn /etc/apparmor.d/socialcommand-vpn
+    apparmor_parser -r /etc/apparmor.d/socialcommand-vpn || echo "Failed to reload apparmor profile"
 fi

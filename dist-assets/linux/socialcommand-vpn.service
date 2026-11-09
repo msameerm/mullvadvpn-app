@@ -3,7 +3,7 @@
 [Unit]
 Description=SocialCommand VPN daemon
 Before=network-online.target
-After=mullvad-early-boot-blocking.service network.target
+After=socialcommand-vpn-early-boot-blocking.service network.target
 
 StartLimitBurst=5
 StartLimitIntervalSec=20

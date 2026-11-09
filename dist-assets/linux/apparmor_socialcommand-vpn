@@ -1,0 +1,8 @@
+abi <abi/4.0>,
+include <tunables/global>
+
+profile socialcommand-vpn "/opt/SocialCommand VPN/socialcommand-vpn" flags=(unconfined) {
+  userns,
+  # Site-specific additions and overrides. See local/README for details.
+  include if exists <local/socialcommand-vpn>
+}
