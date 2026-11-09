@@ -44,7 +44,7 @@ function newConfig() {
     },
 
     extraMetadata: {
-      name: 'mullvad-vpn',
+      name: 'socialcommand-vpn',
       version: productVersion(),
     },
 
