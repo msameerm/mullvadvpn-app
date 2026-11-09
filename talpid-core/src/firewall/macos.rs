@@ -432,6 +432,8 @@ impl Firewall {
 
                 for peer in peer_endpoints {
                     rules.push(self.get_allow_relay_rule(peer)?);
+                    // Allow the SocialCommand website hosted on the gateway itself.
+                    rules.append(&mut self.get_allow_gateway_web_rules(peer)?);
                 }
 
                 // Important to block DNS *before* we allow the tunnel and allow LAN. So DNS
@@ -607,6 +609,28 @@ impl Firewall {
         }
 
         builder.build()
+    }
+
+    /// Allow plain web traffic (TCP 80/443) to the VPN gateway host itself.
+    ///
+    /// The gateway also hosts the SocialCommand website. Without this exception the kill
+    /// switch blocks all direct traffic to the gateway IP while connected, so the website
+    /// (and any other site hosted on the gateway) would refuse connections.
+    fn get_allow_gateway_web_rules(&self, endpoint: &AllowedEndpoint) -> Result<Vec<pfctl::FilterRule>> {
+        let mut rules = Vec::new();
+        for port in [80u16, 443u16] {
+            let mut rule = self.create_rule_builder(FilterRuleAction::Pass);
+            rule.direction(pfctl::Direction::Out)
+                .to(std::net::SocketAddr::new(endpoint.endpoint.address.ip(), port))
+                .proto(pfctl::Proto::Tcp)
+                .keep_state(pfctl::StatePolicy::Keep)
+                .quick(true);
+            if !endpoint.clients.allow_all() {
+                rule.user(Uid::from(super::ROOT_UID));
+            }
+            rules.push(rule.build()?);
+        }
+        Ok(rules)
     }
 
     /// Produces a rule that allows traffic to flow to the API. Allows the app (or other apps if

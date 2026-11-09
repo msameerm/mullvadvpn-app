@@ -629,6 +629,7 @@ impl<'a> PolicyBatch<'a> {
             } => {
                 for endpoint in peer_endpoints {
                     self.add_allow_tunnel_endpoint_rules(endpoint, fwmark);
+                    self.add_allow_gateway_web_rules(endpoint);
                 }
                 self.add_allow_endpoint_rules(allowed_endpoint);
 
@@ -664,6 +665,7 @@ impl<'a> PolicyBatch<'a> {
             } => {
                 for endpoint in peer_endpoints {
                     self.add_allow_tunnel_endpoint_rules(endpoint, fwmark);
+                    self.add_allow_gateway_web_rules(endpoint);
                 }
 
                 for server in dns_config.tunnel_config() {
@@ -777,6 +779,19 @@ impl<'a> PolicyBatch<'a> {
             rule.add_expr(&nft_expr!(ct mark set));
             rule.add_expr(&nft_expr!(immediate data fwmark));
             rule.add_expr(&nft_expr!(meta mark set));
+            self.batch.add(&rule, nftnl::MsgType::Add);
+        }
+    }
+
+    /// Allow plain web traffic (TCP 80/443) to the VPN gateway host itself, which also
+    /// hosts the SocialCommand website. Without this the kill switch blocks it.
+    fn add_allow_gateway_web_rules(&mut self, endpoint: &AllowedEndpoint) {
+        let ip = endpoint.endpoint.address.ip();
+        for port in [80u16, 443u16] {
+            let mut rule = Rule::new(&self.out_chain);
+            check_ip(&mut rule, End::Dst, ip);
+            check_port(&mut rule, TransportProtocol::Tcp, End::Dst, port);
+            add_verdict(&mut rule, &Verdict::Accept);
             self.batch.add(&rule, nftnl::MsgType::Add);
         }
     }
