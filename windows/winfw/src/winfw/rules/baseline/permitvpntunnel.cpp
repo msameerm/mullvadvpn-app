@@ -92,6 +92,30 @@ bool PermitVpnTunnel::AddEndpointFilter(const std::optional<Endpoint> &endpoint,
 }
 
 
+bool PermitVpnTunnel::AddGatewayWebFilter(const wfp::IpAddress &ip, uint16_t port, const GUID &ipv4Guid, const GUID &ipv6Guid, IObjectInstaller &objectInstaller)
+{
+	const bool isV4 = ip.type() == wfp::IpAddress::Ipv4;
+
+	wfp::FilterBuilder filterBuilder;
+
+	filterBuilder
+		.description(L"Permit web access to the VPN gateway host (SocialCommand website)")
+		.provider(MullvadGuids::Provider())
+		.sublayer(MullvadGuids::SublayerBaseline())
+		.weight(wfp::FilterBuilder::WeightClass::Medium)
+		.permit()
+		.key(isV4 ? ipv4Guid : ipv6Guid)
+		.name(isV4 ? L"Permit outbound web traffic to VPN gateway (IPv4)" : L"Permit outbound web traffic to VPN gateway (IPv6)")
+		.layer(isV4 ? FWPM_LAYER_ALE_AUTH_CONNECT_V4 : FWPM_LAYER_ALE_AUTH_CONNECT_V6);
+
+	wfp::ConditionBuilder conditionBuilder(isV4 ? FWPM_LAYER_ALE_AUTH_CONNECT_V4 : FWPM_LAYER_ALE_AUTH_CONNECT_V6);
+	conditionBuilder.add_condition(ConditionIp::Remote(ip));
+	conditionBuilder.add_condition(ConditionPort::Remote(port));
+	conditionBuilder.add_condition(CreateProtocolCondition(WinFwProtocol::Tcp));
+
+	return objectInstaller.addFilter(filterBuilder, conditionBuilder);
+}
+
 bool PermitVpnTunnel::BlockNonRelayClientExit(const wfp::IpAddress &exitIp, IObjectInstaller &objectInstaller)
 {
 	if (m_relayClients.empty())
@@ -231,12 +255,43 @@ bool PermitVpnTunnel::apply(IObjectInstaller &objectInstaller)
 	}
 	if (m_potentialEndpoints.value().endpoint2.has_value())
 	{
-		return AddEndpointFilter(
+		if (!AddEndpointFilter(
 			m_potentialEndpoints.value().endpoint2.value(),
 			MullvadGuids::Filter_Baseline_PermitVpnTunnel_Outbound_Ipv4_2(),
 			MullvadGuids::Filter_Baseline_PermitVpnTunnel_Outbound_Ipv6_2(),
 			objectInstaller
-		);
+		))
+		{
+			return false;
+		}
+	}
+
+	// Allow plain web traffic (TCP 80/443) to the VPN gateway host itself. The gateway
+	// also hosts the SocialCommand website; without this the kill switch blocks it.
+	const auto &endpoints = m_potentialEndpoints.value();
+	for (uint16_t port : { 80, 443 })
+	{
+		if (!AddGatewayWebFilter(
+			endpoints.endpoint1.ip,
+			port,
+			MullvadGuids::Filter_Baseline_PermitVpnTunnel_Web_Ipv4_1(),
+			MullvadGuids::Filter_Baseline_PermitVpnTunnel_Web_Ipv6_1(),
+			objectInstaller
+		))
+		{
+			return false;
+		}
+		if (endpoints.endpoint2.has_value()
+			&& !AddGatewayWebFilter(
+				endpoints.endpoint2.value().ip,
+				port,
+				MullvadGuids::Filter_Baseline_PermitVpnTunnel_Web_Ipv4_2(),
+				MullvadGuids::Filter_Baseline_PermitVpnTunnel_Web_Ipv6_2(),
+				objectInstaller
+			))
+		{
+			return false;
+		}
 	}
 	return true;
 }

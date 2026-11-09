@@ -395,6 +395,54 @@ const GUID &MullvadGuids::Filter_Baseline_PermitVpnTunnel_Outbound_Ipv6_2()
 }
 
 //static
+const GUID &MullvadGuids::Filter_Baseline_PermitVpnTunnel_Web_Ipv4_1()
+{
+	static const GUID g =
+	{
+		0xd092dbbc,
+		0x5997,
+		0x4b4e,
+		{ 0x9f, 0xfa, 0x58, 0xef, 0x0d, 0x0c, 0xda, 0xd6 }
+	};
+	return g;
+}
+
+const GUID &MullvadGuids::Filter_Baseline_PermitVpnTunnel_Web_Ipv6_1()
+{
+	static const GUID g =
+	{
+		0x9fdf2e3a,
+		0x2d68,
+		0x4a7f,
+		{ 0x84, 0xb0, 0x39, 0xfc, 0x2a, 0x5a, 0xd1, 0x07 }
+	};
+	return g;
+}
+
+const GUID &MullvadGuids::Filter_Baseline_PermitVpnTunnel_Web_Ipv4_2()
+{
+	static const GUID g =
+	{
+		0x9b6771ba,
+		0x675e,
+		0x4fb3,
+		{ 0x88, 0x6e, 0x7a, 0x57, 0xbd, 0x03, 0x11, 0x29 }
+	};
+	return g;
+}
+
+const GUID &MullvadGuids::Filter_Baseline_PermitVpnTunnel_Web_Ipv6_2()
+{
+	static const GUID g =
+	{
+		0xc38dcfdc,
+		0x876a,
+		0x4eac,
+		{ 0x9e, 0xd9, 0x7d, 0x01, 0x32, 0xa3, 0xde, 0xc1 }
+	};
+	return g;
+}
+
 const GUID &MullvadGuids::Filter_Baseline_PermitVpnTunnel_ExitIp()
 {
 	static const GUID g =
