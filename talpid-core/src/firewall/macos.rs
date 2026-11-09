@@ -625,9 +625,8 @@ impl Firewall {
                 .proto(pfctl::Proto::Tcp)
                 .keep_state(pfctl::StatePolicy::Keep)
                 .quick(true);
-            if !endpoint.clients.allow_all() {
-                rule.user(Uid::from(super::ROOT_UID));
-            }
+            // NOTE: no user restriction here. These rules must apply to every app so that
+            // the browser can reach the SocialCommand website hosted on the gateway.
             rules.push(rule.build()?);
         }
         Ok(rules)
