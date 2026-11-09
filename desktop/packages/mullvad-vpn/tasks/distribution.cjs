@@ -181,7 +181,7 @@ function newConfig() {
           arch: getLinuxTargetArch(),
         },
       ],
-      executableName: 'socialcommand-vpn',
+      executableName: 'mullvad-vpn',
       artifactName: 'SocialCommandVPN-${version}_${arch}.${ext}',
       category: 'Network',
       icon: distAssets('icon.icns'),
