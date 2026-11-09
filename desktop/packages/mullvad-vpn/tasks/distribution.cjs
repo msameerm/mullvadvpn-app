@@ -189,7 +189,7 @@ function newConfig() {
       extraResources: [
         { from: distAssets(path.join(getLinuxTargetSubdir(), 'mullvad-problem-report')), to: '.' },
         { from: distAssets(path.join(getLinuxTargetSubdir(), 'mullvad-setup')), to: '.' },
-        { from: distAssets(path.join('linux', 'apparmor_mullvad')), to: '.' },
+        { from: distAssets(path.join('linux', 'apparmor_socialcommand-vpn')), to: '.' },
       ],
     },
 
