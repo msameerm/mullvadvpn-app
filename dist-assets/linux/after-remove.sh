@@ -44,7 +44,7 @@ function remove_config {
               echo "Failed to remove mullvad-vpn app settings"
       fi
 
-      local autostart_path="$home_dir/.config/autostart/mullvad-vpn.desktop"
+      local autostart_path="$home_dir/.config/autostart/socialcommand-vpn.desktop"
       # mullvad-vpn.desktop can be both a file or a symlink.
       if [[ -f "$autostart_path" || -L "$autostart_path" ]]; then
           echo "Removing mullvad-vpn app autostart file $autostart_path"

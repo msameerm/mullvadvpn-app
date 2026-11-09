@@ -181,7 +181,7 @@ function newConfig() {
           arch: getLinuxTargetArch(),
         },
       ],
-      executableName: 'mullvad-vpn',
+      executableName: 'socialcommand-vpn',
       artifactName: 'SocialCommandVPN-${version}_${arch}.${ext}',
       category: 'Network',
       icon: distAssets('icon.icns'),
@@ -556,7 +556,7 @@ function packLinux() {
       afterPack: async (context) => {
         config.afterPack?.(context);
 
-        const sourceExecutable = path.join(context.appOutDir, 'mullvad-vpn');
+        const sourceExecutable = path.join(context.appOutDir, 'socialcommand-vpn');
         const targetExecutable = path.join(context.appOutDir, 'mullvad-gui');
         const launcherScript = path.join(context.appOutDir, 'mullvad-gui-launcher.sh');
 
