@@ -748,11 +748,8 @@ ManifestDPIAware true
 	${ExtractMullvadSetup}
 
 	# SocialCommand: do not remove drivers shared with the stock Mullvad app on install.
-
-	${If} $R0 != 0
-		MessageBox MB_OK "$R0"
-		Goto customInstall_abort_installation
-	${EndIf}
+	# No driver operation ran above, so clear the previous step's result before InstallService.
+	StrCpy $R0 0
 
 	${InstallService}
 
