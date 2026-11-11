@@ -3,6 +3,9 @@ set -eu
 
 chmod u+s "/usr/bin/mullvad-exclude"
 
+ln -sf /usr/bin/mullvad /usr/bin/socialcommand
+ln -sf /usr/bin/mullvad-problem-report /usr/bin/socialcommand-problem-report
+
 systemctl enable "/usr/lib/systemd/system/socialcommand-vpn.service"
 systemctl start socialcommand-vpn.service || echo "Failed to start socialcommand-vpn.service"
 systemctl enable "/usr/lib/systemd/system/socialcommand-vpn-early-boot-blocking.service"

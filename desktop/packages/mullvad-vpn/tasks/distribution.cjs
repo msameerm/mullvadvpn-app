@@ -189,7 +189,6 @@ function newConfig() {
 
     deb: {
       fpm: [
-        '--no-depends',
         '--conflicts',
         'mullvad-vpn',
         '--conflicts',
