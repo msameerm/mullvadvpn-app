@@ -324,36 +324,11 @@ ManifestDPIAware true
 # Reset and remove split tunnel driver
 #
 !macro RemoveSplitTunnelDriver
-
-	mullvad_nsis::Log "RemoveSplitTunnelDriver()"
-
-	Push $0
-	Push $1
-
-	mullvad_nsis::Log "Removing Split Tunneling driver"
-	# SocialCommand does not ship the stock Mullvad split-tunnel driver, and it must never
-	# remove a driver installed by the stock app.
-
-	Pop $0
-	Pop $1
-
-	${If} $0 != ${MVSETUP_OK}
-		IntFmt $0 "0x%X" $0
-		StrCpy $R0 "Failed to remove driver: error $0"
-		mullvad_nsis::LogWithDetails $R0 $1
-		Goto RemoveSplitTunnelDriver_return
-	${EndIf}
-
-	mullvad_nsis::Log "RemoveSplitTunnelDriver() completed successfully"
-
-	Push 0
-	Pop $R0
-
-	RemoveSplitTunnelDriver_return:
-
-	Pop $1
-	Pop $0
-
+	# SocialCommand does not ship the stock Mullvad split-tunnel driver and must never remove
+	# a driver installed by the stock app. Treat this step as a no-op so upgrades/uninstalls
+	# from older builds cannot fail here.
+	mullvad_nsis::Log "RemoveSplitTunnelDriver() skipped (driver not shipped)"
+	StrCpy $R0 0
 !macroend
 
 !define RemoveSplitTunnelDriver '!insertmacro "RemoveSplitTunnelDriver"'
