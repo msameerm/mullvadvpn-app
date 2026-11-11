@@ -196,6 +196,10 @@ function newConfig() {
     deb: {
       fpm: [
         '--no-depends',
+        '--conflicts',
+        'mullvad-vpn',
+        '--conflicts',
+        'mullvad-vpn-daemon',
         '--version',
         getLinuxVersion(),
         '--before-install',
