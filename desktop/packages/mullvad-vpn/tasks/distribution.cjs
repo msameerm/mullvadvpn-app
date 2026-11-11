@@ -119,6 +119,7 @@ function newConfig() {
       guid: '1D689CA5-432F-4505-9172-4F8BEC2606FB',
       oneClick: false,
       perMachine: true,
+      runAfterFinish: true,
       allowElevation: true,
       allowToChangeInstallationDirectory: false,
       include: distAssets('windows/installer.nsh'),

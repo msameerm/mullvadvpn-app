@@ -26,6 +26,40 @@ export function getOpenAtLogin() {
   }
 }
 
+/**
+ * SocialCommand: enable "launch at startup" on first run so the tray icon is available
+ * without the user having to find and enable it manually. The marker file ensures we only
+ * do this once, so a user who later disables autostart is not overridden on every launch.
+ */
+export async function ensureOpenAtLoginDefault(): Promise<void> {
+  const markerPath = path.join(app.getPath('userData'), '.autostart-initialized');
+
+  try {
+    if (fs.existsSync(markerPath)) {
+      return;
+    }
+  } catch {
+    // if we cannot read the marker, fall through and try to initialise
+  }
+
+  try {
+    if (!getOpenAtLogin()) {
+      await setOpenAtLogin(true);
+    }
+  } catch (e) {
+    const error = e as Error;
+    log.error(`Failed to enable default autostart: ${error.message}`);
+    return;
+  }
+
+  try {
+    fs.writeFileSync(markerPath, '1');
+  } catch (e) {
+    const error = e as Error;
+    log.error(`Failed to write autostart marker: ${error.message}`);
+  }
+}
+
 export async function setOpenAtLogin(openAtLogin: boolean) {
   if (process.platform === 'linux') {
     try {

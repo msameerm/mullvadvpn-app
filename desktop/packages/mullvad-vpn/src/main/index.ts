@@ -37,7 +37,7 @@ import {
 import { RoutePath } from '../shared/routes';
 import Account, { AccountDelegate, LocaleProvider } from './account';
 import AppUpgrade from './app-upgrade';
-import { getOpenAtLogin } from './autostart';
+import { ensureOpenAtLoginDefault, getOpenAtLogin } from './autostart';
 import { readChangelog } from './changelog';
 import {
   CommandLineOptions,
@@ -228,7 +228,10 @@ class ApplicationMain
       );
     });
 
-    app.on('ready', this.onReady);
+    app.on('ready', () => {
+      void ensureOpenAtLoginDefault();
+      void this.onReady();
+    });
 
     app.on('before-quit', this.onBeforeQuit);
     app.on('will-quit', () => {
