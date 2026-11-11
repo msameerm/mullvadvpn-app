@@ -106,8 +106,19 @@ chmod 644 $DAEMON_PLIST_PATH
 launchctl load -w $DAEMON_PLIST_PATH
 
 mkdir -p /usr/local/bin
-ln -sf "$INSTALL_DIR/SocialCommand VPN.app/Contents/Resources/mullvad" /usr/local/bin/mullvad
-ln -sf "$INSTALL_DIR/SocialCommand VPN.app/Contents/Resources/mullvad-problem-report" /usr/local/bin/mullvad-problem-report
+
+# Never overwrite the stock Mullvad CLI symlinks: install SocialCommand-named
+# symlinks first, and only create "mullvad" if it does not already point elsewhere.
+ln -sf "$INSTALL_DIR/SocialCommand VPN.app/Contents/Resources/mullvad" /usr/local/bin/socialcommand
+ln -sf "$INSTALL_DIR/SocialCommand VPN.app/Contents/Resources/mullvad-problem-report" /usr/local/bin/socialcommand-problem-report
+
+for name in mullvad mullvad-problem-report; do
+    target="/usr/local/bin/$name"
+    source="$INSTALL_DIR/SocialCommand VPN.app/Contents/Resources/$name"
+    if [[ ! -e "$target" && ! -L "$target" ]] || [[ "$(readlink "$target" 2>/dev/null || true)" == "$source" ]]; then
+        ln -sf "$source" "$target"
+    fi
+done
 
 mkdir -p "$ZSH_COMPLETIONS_DIR"
 ln -sf "$INSTALL_DIR/SocialCommand VPN.app/Contents/Resources/_mullvad" "$ZSH_COMPLETIONS_DIR/_mullvad"

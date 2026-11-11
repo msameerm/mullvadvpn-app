@@ -52,7 +52,14 @@ echo "Removing nushell completion symlink ..."
 sudo rm -f "/usr/local/share/nushell/vendor/autoload/mullvad.nu"
 
 echo "Removing CLI symlinks from /usr/local/bin/ ..."
-sudo rm -f /usr/local/bin/mullvad /usr/local/bin/mullvad-problem-report
+sudo rm -f /usr/local/bin/socialcommand /usr/local/bin/socialcommand-problem-report
+# Only remove the mullvad symlinks if they point at the SocialCommand app.
+for name in mullvad mullvad-problem-report; do
+    link="/usr/local/bin/$name"
+    if [[ -L "$link" && "$(readlink "$link")" == *"SocialCommand VPN.app"* ]]; then
+        sudo rm -f "$link"
+    fi
+done
 
 echo "Removing app from /Applications ..."
 sudo rm -rf /Applications/SocialCommand\ VPN.app
