@@ -95,9 +95,23 @@ android {
         generateLocaleConfig = false
     }
 
+    signingConfigs {
+        // Release signing is enabled automatically when the keystore is present. The keystore
+        // must NEVER be committed; CI supplies it as a secret (SC_KS_PATH) or builds stay unsigned.
+        val keystoreFile = file("$repoRootPath/dist/android/app-keys.jks")
+        if (keystoreFile.exists()) {
+            create("release") {
+                storeFile = keystoreFile
+                storePassword = System.getenv("SC_KS_PASS") ?: "socialcommand"
+                keyAlias = System.getenv("SC_KEY_ALIAS") ?: "release"
+                keyPassword = System.getenv("SC_KEY_PASS") ?: "socialcommand"
+            }
+        }
+    }
+
     buildTypes {
         getByName(BuildTypes.RELEASE) {
-            signingConfig = null
+            signingConfig = signingConfigs.findByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
