@@ -104,9 +104,12 @@ android {
         if (keystoreFile.exists()) {
             create("release") {
                 storeFile = keystoreFile
-                storePassword = System.getenv("SC_KS_PASS") ?: "socialcommand"
+                storePassword = System.getenv("SC_KS_PASS")
+                    ?: error("SC_KS_PASS must be set to sign release builds")
                 keyAlias = System.getenv("SC_KEY_ALIAS") ?: "release"
-                keyPassword = System.getenv("SC_KEY_PASS") ?: "socialcommand"
+                keyPassword = System.getenv("SC_KEY_PASS")
+                    ?: System.getenv("SC_KS_PASS")
+                    ?: error("SC_KEY_PASS or SC_KS_PASS must be set")
             }
         }
     }

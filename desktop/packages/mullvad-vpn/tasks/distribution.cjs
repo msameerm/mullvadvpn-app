@@ -157,12 +157,6 @@ function newConfig() {
         },
         {
           from: distAssets(
-            path.join('binaries', '${env.TARGET_SUBDIR}', 'split-tunnel/mullvad-split-tunnel.sys'),
-          ),
-          to: '.',
-        },
-        {
-          from: distAssets(
             path.join('binaries', '${env.TARGET_SUBDIR}', 'wireguard-nt/wireguard.dll'),
           ),
           to: '.',
@@ -222,6 +216,7 @@ function newConfig() {
         buildAssets('shell-completions/mullvad.nu') +
           '=/usr/share/nushell/vendor/autoload/mullvad.nu',
       ],
+      depends: ['libgtk-3-0', 'libnotify4', 'libnss3', 'libxss1', 'xdg-utils'],
       afterInstall: distAssets('linux/after-install.sh'),
       afterRemove: distAssets('linux/after-remove.sh'),
     },
@@ -251,6 +246,10 @@ function newConfig() {
         distAssets('linux/before-remove.sh'),
         '--rpm-posttrans',
         distAssets('linux/post-transaction.sh'),
+        '--conflicts',
+        'mullvad-vpn',
+        '--conflicts',
+        'mullvad-vpn-daemon',
         distAssets('linux/socialcommand-vpn.service') +
           '=/usr/lib/systemd/system/socialcommand-vpn.service',
         distAssets('linux/socialcommand-vpn-early-boot-blocking.service') +

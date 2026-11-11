@@ -42,3 +42,9 @@ android/.idea
 .vscode/
 .direnv/
 .zed/
+
+# signing material / secrets
+*.jks
+*.keystore
+*.p12
+update-secret*

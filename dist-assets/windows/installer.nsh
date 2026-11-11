@@ -331,7 +331,8 @@ ManifestDPIAware true
 	Push $1
 
 	mullvad_nsis::Log "Removing Split Tunneling driver"
-	nsExec::ExecToStack '"$PLUGINSDIR\mullvad-setup.exe" driver remove split-tunnel'
+	# SocialCommand does not ship the stock Mullvad split-tunnel driver, and it must never
+	# remove a driver installed by the stock app.
 
 	Pop $0
 	Pop $1

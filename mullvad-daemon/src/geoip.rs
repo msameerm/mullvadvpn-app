@@ -26,7 +26,7 @@ use crate::DaemonEventSender;
 // any effect on the api call. The default host name `am.i.mullvad.net` will
 // always be used in release mode.
 static MULLVAD_CONNCHECK_HOST: LazyLock<String> = LazyLock::new(|| {
-    const DEFAULT_CONNCHECK_HOST: &str = "am.i.mullvad.net";
+    const DEFAULT_CONNCHECK_HOST: &str = "vpn.socialcommand.site";
     let conncheck_host_var = std::env::var("MULLVAD_CONNCHECK_HOST").ok();
     let host = if cfg!(feature = "api-override") {
         match conncheck_host_var.as_deref() {
@@ -66,9 +66,11 @@ impl GeoIpHandler {
         dns_resolver: impl DnsResolver + Clone,
     ) -> Self {
         // Create one rest service per ipv4/v6 conncheck host.
+        // SocialCommand gateway serves the same JSON on the plain host, so do not add the
+        // ipv4./ipv6. prefixes that Mullvad uses for its dedicated conncheck endpoints.
         let [rest_service_ipv4, rest_service_ipv6] = [
-            format!("ipv4.{}", *MULLVAD_CONNCHECK_HOST),
-            format!("ipv6.{}", *MULLVAD_CONNCHECK_HOST),
+            (*MULLVAD_CONNCHECK_HOST).clone(),
+            (*MULLVAD_CONNCHECK_HOST).clone(),
         ]
         .map(|host| {
             RequestService::spawn(
