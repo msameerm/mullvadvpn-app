@@ -664,32 +664,31 @@ ManifestDPIAware true
 # which kills the app and may thus cause the daemon to disconnect.
 #
 !macro customCheckAppRunning
+	# SocialCommand: always stop OUR service and close OUR processes before the
+	# installer extracts files. Without this, an already-running app/daemon keeps
+	# "Uninstall SocialCommand VPN.exe" locked and the installer fails with
+	# "cannot be closed" / "error writing to file".
+	#
+	# Only processes whose executable path is inside $INSTDIR are touched, and
+	# only the SocialCommandVPN service is stopped. The stock Mullvad app and its
+	# daemon are never stopped or killed.
 	Push $R0
-	Push $R1
 
-	# This must be done here for compatibility with <= 2021.2,
-	# since those versions do not kill the GUI in the uninstaller.
-	Var /GLOBAL OldVersion
-	ReadRegStr $OldVersion HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${APP_GUID}" "DisplayVersion"
-	StrCpy $R0 $OldVersion 4 # Major version
-	StrCpy $R1 $OldVersion 1 5 # Minor version
-	${If} $R0 > 2021
-		Goto customCheckAppRunning_skip_kill
-	${OrIf} $R0 == 2021
-		${If} $R1 > 2
-			Goto customCheckAppRunning_skip_kill
-		${EndIf}
-	${EndIf}
+	nsExec::Exec 'sc stop SocialCommandVPN'
+	Pop $R0
+	Sleep 1500
 
-	# Killing without /f will likely cause the daemon to disconnect.
+	# Kill GUI/helper processes that live in our install directory.
+	nsExec::Exec `"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -ExecutionPolicy Bypass -Command "Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -and $_.Path.StartsWith('$INSTDIR', [System.StringComparison]::OrdinalIgnoreCase) } | Stop-Process -Force -ErrorAction SilentlyContinue"`
+	Pop $R0
+	Sleep 1000
+
+	# The GUI has a unique image name; kill it explicitly as well.
 	nsExec::Exec `"$SYSDIR\taskkill.exe" /f /t /im "${APP_EXECUTABLE_FILENAME}"`
 	Pop $R0
 	Sleep 500
 
-	customCheckAppRunning_skip_kill:
-	Pop $R1
 	Pop $R0
-
 !macroend
 
 #
