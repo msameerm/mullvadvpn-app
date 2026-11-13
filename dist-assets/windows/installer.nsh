@@ -679,7 +679,7 @@ ManifestDPIAware true
 	Sleep 1500
 
 	# Kill GUI/helper processes that live in our install directory.
-	nsExec::Exec `"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -ExecutionPolicy Bypass -Command "Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -and $_.Path.StartsWith('$INSTDIR', [System.StringComparison]::OrdinalIgnoreCase) } | Stop-Process -Force -ErrorAction SilentlyContinue"`
+	nsExec::Exec `"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -ExecutionPolicy Bypass -Command "Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -and $_.Path.StartsWith('$INSTDIR', [System.StringComparison]::OrdinalIgnoreCase) -and $_.ProcessName -notlike 'Uninstall*' } | Stop-Process -Force -ErrorAction SilentlyContinue"`
 	Pop $R0
 	Sleep 1000
 
